@@ -1,0 +1,11 @@
+package protocol;
+
+enum ErrorCodeDefine{
+	LOGIN_SUCCEED			=0;//登录成功
+	ACCOUNT_EEROR			=1;//账号错误
+	PASSWORD_ERROR			=2;//密码错误
+	REGISTER_SUCCEED		=3;//注册成功
+	ACCOUNT_EXISTS			=4;//账号已存在
+	HANDLE_SHAKE_FAILE		=5;//握手成功
+	HANDLE_SHAKE_SUCCEED	=6;//握手失败
+}
