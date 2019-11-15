@@ -9,3 +9,10 @@ F:\WinForm_Socket\Aver3\Server\bin\Debug\Google.Protobuf.dll
 F:\WinForm_Socket\Aver3\Server\bin\Debug\Google.Protobuf.pdb
 F:\WinForm_Socket\Aver3\Server\bin\Debug\Google.Protobuf.xml
 F:\WinForm_Socket\Aver3\Server\obj\Debug\SocketServer.csproj.CopyComplete
+F:\SocketServer\bin\Debug\Server.exe.config
+F:\SocketServer\bin\Debug\Server.exe
+F:\SocketServer\bin\Debug\Server.pdb
+F:\SocketServer\obj\Debug\SocketServer.csproj.CoreCompileInputs.cache
+F:\SocketServer\obj\Debug\Server.exe
+F:\SocketServer\obj\Debug\Server.pdb
+F:\SocketServer\obj\Debug\SocketServer.csprojAssemblyReference.cache

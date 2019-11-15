@@ -13,180 +13,197 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
 public class SocketServer
 {
-    private static SocketServer _instance;
+    private static SocketServer m_Instance;
     public static SocketServer Instance
     {
         get
         {
-            if(_instance == null)
+            if(m_Instance == null)
             {
-                _instance = new SocketServer();
+                m_Instance = new SocketServer();
             }
-            return _instance;
+            return m_Instance;
         }
     }
 
-    private Socket serverSocket;
-    private static byte[] result = new byte[1024];
+    //创建套接字   // Create a TCP/IP socket.
+    private static Socket m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    private static byte[] m_result = new byte[1024];
+    public static ManualResetEvent manualResetEvent = new ManualResetEvent(false);
 
-    public void InitSocket(string host, int port)
+    public void InitSocket(string listen_ip = "127.0.0.1", int port = 8090)
     {
-        if(string.IsNullOrEmpty(host))
-        {
-            Console.WriteLine("【SocketServer.InitSocket】host is null");
-            return;
-        }
-        IPEndPoint ipEndPoint = null;
+        //Console.WriteLine(string.Format("服务端已启动{0}:{1}，等待连接",host,port));
+        //m_socket.Bind(new IPEndPoint(IPAddress.Parse(host), port));
+        //m_socket.Listen(100);//设定最多100个排队连接请求   
+        //Thread myThread = new Thread(ListenClientConnect);//通过多线程监听客户端连接  
+        //myThread.Start();
 
-        bool isMatch = IsRightIP(host);
-        if(isMatch)
-        {
-            ipEndPoint = new IPEndPoint(IPAddress.Parse(host), port);
-        }
-        else
-        {
-            ipEndPoint = new IPEndPoint(IPAddress.Parse(GetIPAddress()), port);
-        }
+        IPAddress ipAddress = IPAddress.Parse(listen_ip);//IPAddress.Loopback;//Parse("127.0.0.1");
+        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
 
-        serverSocket = new Socket(ipEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
+        // Bind the socket to the local endpoint and listen for incoming connections.
         try
         {
-            serverSocket.Bind(ipEndPoint);//绑定IP和端口          
-            serverSocket.Listen(1000);//设置监听数量  
-            Console.WriteLine("启动监听{0}成功", serverSocket.LocalEndPoint.ToString());
-            //InitTreadAndQueue();
-            //在新线程中监听客户端的连接
-            Thread thread = new Thread(ClientConnectListen);
-            thread.Start();
-            Console.ReadLine();
+            m_socket.Bind(localEndPoint);
+            m_socket.Listen(100);
+            while (true)
+            {
+                // Set the event to nonsignaled state.
+                manualResetEvent.Reset();
+
+                // Start an asynchronous socket to listen for connections.
+                Console.WriteLine("Waiting for a connection");
+                m_socket.BeginAccept(new AsyncCallback(AcceptCallback),m_socket);
+
+                // Wait until a connection is made before continuing.
+                manualResetEvent.WaitOne();
+            }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine(e.ToString());
+        }
+
+        Console.WriteLine("\nPress ENTER to continue");
+        Console.Read();
+    }
+
+    public static void AcceptCallback(IAsyncResult ar)
+    {
+        // Signal the main thread to continue.
+        manualResetEvent.Set();
+
+        // Get the socket that handles the client request.
+        Socket listener = (Socket)ar.AsyncState;
+        Socket handler = listener.EndAccept(ar);
+
+        // Create the state object.
+        StateObject state = new StateObject();
+        state.workSocket = handler;
+        handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+    }
+
+    public static void ReadCallback(IAsyncResult ar)
+    {
+        String content = String.Empty;
+
+        // Retrieve the state object and the handler socket
+        // from the asynchronous state object.
+        StateObject state = (StateObject)ar.AsyncState;
+        Socket handler = state.workSocket;
+
+        // Read data from the client socket. 
+        int bytesRead = handler.EndReceive(ar);
+
+        if (bytesRead > 0)
+        {
+            RequestHandler reqh = state.reqhandler;
+            reqh.PushRecived(state.buffer, bytesRead);
+            //Console.WriteLine("Read {0} bytes from socket. ", bytesRead);
+            if (reqh.IsAllRecived())
+            {
+                //Send(handler, reqh.GetResponseData());
+                reqh.BeginResponse(new SocketAgent(handler));
+            }
+            else
+            {
+                // Not all data received. Get more.
+                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+            }
         }
     }
 
-    /// <summary>
-    /// 客户端连接请求监听
-    /// </summary>
-    private void ClientConnectListen()
+    #region Send
+    private static void Send(Socket handler, String data)
     {
-        while(true)
+        // Convert the string data to byte data using ASCII encoding.
+        byte[] byteData = Encoding.ASCII.GetBytes(data);
+
+        // Begin sending the data to the remote device.
+        handler.BeginSend(byteData, 0, byteData.Length, 0,
+            new AsyncCallback(SendCallback), handler);
+    }
+
+    private static void Send(Socket handler, byte[] data)
+    {
+        // Begin sending the data to the remote device.
+        handler.BeginSend(data, 0, data.Length, 0,
+            new AsyncCallback(SendCallback), handler);
+    }
+
+    private static void SendCallback(IAsyncResult ar)
+    {
+        try
         {
-            //为新的客户端连接创建一个Socket对象
-            Socket clientSocket = serverSocket.Accept();
-            Console.WriteLine("客户端{0}成功连接", clientSocket.RemoteEndPoint.ToString());
-            //向连接的客户端发送连接成功的数据
-            ByteBuffer buffer = new ByteBuffer();
-            buffer.WriteString("Connected Server");
-            clientSocket.Send(WriteMessage(buffer.ToBytes()));
-            //每个客户端连接创建一个线程来接受该客户端发送的消息
-            Thread thread = new Thread(RecieveMessage);
-            thread.Start(clientSocket);
+            // Retrieve the socket from the state object.
+            Socket handler = (Socket)ar.AsyncState;
+
+            // Complete sending the data to the remote device.
+            int bytesSent = handler.EndSend(ar);
+            Console.WriteLine("Sent {0} bytes to client.", bytesSent);
+            handler.Shutdown(SocketShutdown.Both);
+            handler.Close();
+        }
+
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+    }
+    #endregion
+
+    /// <summary>  
+    /// 监听客户端连接  
+    /// </summary>  
+    private static void ListenClientConnect()
+    {
+        while (true)
+        {
+            Socket clientSocket = m_socket.Accept();
+            clientSocket.Send(Encoding.UTF8.GetBytes("服务器连接成功"));
+            Thread receiveThread = new Thread(ReceiveMessage);
+            receiveThread.Start(clientSocket);
         }
     }
 
-
-    /// <summary>
-    /// 数据转换，网络发送需要两部分数据，一是数据长度，二是主体数据
-    /// </summary>
-    /// <param name="message"></param>
-    /// <returns></returns>
-    private static byte[] WriteMessage(byte[] message)
+    /// <summary>  
+    /// 接收消息  
+    /// </summary>  
+    /// <param name="clientSocket"></param>  
+    private static void ReceiveMessage(object clientSocket)
     {
-        MemoryStream ms = null;
-        using(ms = new MemoryStream())
-        {
-            ms.Position = 0;
-            BinaryWriter writer = new BinaryWriter(ms);
-            ushort msglen = (ushort)message.Length;
-            writer.Write(msglen);
-            writer.Write(message);
-            writer.Flush();
-            return ms.ToArray();
-        }
-    }
-
-    /// <summary>
-    /// 接收指定客户端Socket的消息
-    /// </summary>
-    /// <param name="clientSocket"></param>
-    private static void RecieveMessage(object clientSocket)
-    {
-      
-        Socket mClientSocket = (Socket)clientSocket;
-        while(true)
+        Socket myClientSocket = (Socket)clientSocket;
+        while (true)
         {
             try
             {
-                int receiveNumber = mClientSocket.Receive(result);
-                Console.WriteLine("接收客户端{0}消息， 长度为{1}", mClientSocket.RemoteEndPoint.ToString(), receiveNumber);
-                ByteBuffer buff = new ByteBuffer(result);
-                //数据长度
-                int len = buff.ReadShort();
-                //数据内容
-                string data = buff.ReadString();
-                Console.WriteLine("数据内容：{0}", data);
+                //通过clientSocket接收数据  
+                int receiveNumber = myClientSocket.Receive(m_result);
+                if (receiveNumber == 0)
+                    return;
+                Console.WriteLine("接收客户端{0} 的消息：{1}", myClientSocket.RemoteEndPoint.ToString(), Encoding.UTF8.GetString(m_result, 0, receiveNumber));
+                //给Client端返回信息
+                string sendStr = "已成功接到您发送的消息";
+                byte[] bs = Encoding.UTF8.GetBytes(sendStr);    //Encoding.UTF8.GetBytes()不然中文会乱码
+                myClientSocket.Send(bs, bs.Length, 0);          //返回信息给客户端
+                myClientSocket.Close();                         //发送完数据关闭Socket并释放资源
+                Console.ReadLine();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                mClientSocket.Shutdown(SocketShutdown.Both);
-                mClientSocket.Close();
+                myClientSocket.Shutdown(SocketShutdown.Both);   //禁止发送和上传
+                myClientSocket.Close();                         //关闭Socket并释放资源
                 break;
             }
         }
-    }
-
-    /// <summary>
-    /// 获取ip地址
-    /// </summary>
-    /// <returns></returns>
-    private static string GetIPAddress()
-    {
-        string strLocalIP = "";
-        string strPcName = Dns.GetHostName();
-        IPHostEntry ipEntry = Dns.GetHostEntry(strPcName);
-        foreach(IPAddress address in ipEntry.AddressList)
-        {
-            if(IsRightIP(address.ToString()))
-            {
-                strLocalIP = address.ToString();
-                return strLocalIP;
-            }
-        }
-        return null;
-    }
-
-    /// <summary>
-    /// 判断是否为正确的IP地址
-    /// </summary>
-    /// <param name="strIPadd">需要判断的字符串</param>
-    /// <returns>true = 是 false = 否</returns>
-    private static bool IsRightIP(string strIPadd)
-    {
-        //利用正则表达式判断字符串是否符合IPv4格式
-        if(Regex.IsMatch(strIPadd, "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}"))
-        {
-            string[] ips = strIPadd.Split('.');
-            if(ips.Length == 4 || ips.Length == 6)
-            {
-                if(Int32.Parse(ips[0]) < 256 && Int32.Parse(ips[1]) < 256 & Int32.Parse(ips[2]) < 256 & Int32.Parse(ips[3]) < 256)
-                    return true;
-                else
-                    return false;
-            }
-            else
-                return false;
-        }
-        else
-            return false;
     }
 
 }

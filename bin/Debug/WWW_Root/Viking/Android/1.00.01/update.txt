@@ -1,0 +1,4 @@
+flag;version;2
+flag;required;True
+Android/Android.bundle;9332;65c3a77534fb764b53ea7c5a47951295
+Android/config.bundle;370704;ac3b51ced8c3e02229707c1504fec5fb
