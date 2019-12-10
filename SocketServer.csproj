@@ -32,8 +32,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net, Version=2.4.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>packages\protobuf-net.2.4.4\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -43,15 +49,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IServerScript.cs" />
-    <Compile Include="StateObject.cs" />
+    <Compile Include="HttpSocket\IServerScript.cs" />
+    <Compile Include="HttpSocket\Request.cs" />
+    <Compile Include="HttpSocket\Response.cs" />
+    <Compile Include="HttpSocket\StateObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequestHandler.cs" />
-    <Compile Include="SocketServer.cs" />
+    <Compile Include="HttpSocket\RequestHandler.cs" />
+    <Compile Include="HttpSocket\HttpServer.cs" />
+    <Compile Include="SocketServer\NetMsgData.cs" />
+    <Compile Include="SocketServer\OpCode.cs" />
+    <Compile Include="SocketServer\ProtoBufUtil.cs" />
+    <Compile Include="SocketServer\SocketExtensions.cs" />
+    <Compile Include="SocketServer\SocketServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

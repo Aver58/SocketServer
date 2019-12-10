@@ -24,5 +24,5 @@ public class StateObject
     // Received data string.
     public StringBuilder sb = new StringBuilder();
 
-    public RequestHandler reqhandler = new RequestHandler();
+    public RequestHandler reqHandler = new RequestHandler();
 }

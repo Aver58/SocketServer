@@ -10,44 +10,41 @@
 #endregion
 
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 
-public class SocketServer
+public class HttpServer
 {
-    private static SocketServer m_Instance;
-    public static SocketServer Instance
+    private static HttpServer m_Instance;
+    public static HttpServer Instance
     {
         get
         {
             if(m_Instance == null)
             {
-                m_Instance = new SocketServer();
+                m_Instance = new HttpServer();
             }
             return m_Instance;
         }
     }
 
-    //创建套接字   // Create a TCP/IP socket.
+    //创建套接字 Create a TCP/IP socket.socket相当于一个插座
     private static Socket m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     private static byte[] m_result = new byte[1024];
     public static ManualResetEvent manualResetEvent = new ManualResetEvent(false);
 
-    public void InitSocket(string listen_ip = "127.0.0.1", int port = 8090)
+    public void StartServer(string ip = "127.0.0.1", int port = 8090)
     {
-        //Console.WriteLine(string.Format("服务端已启动{0}:{1}，等待连接",host,port));
-        //m_socket.Bind(new IPEndPoint(IPAddress.Parse(host), port));
-        //m_socket.Listen(100);//设定最多100个排队连接请求   
-        //Thread myThread = new Thread(ListenClientConnect);//通过多线程监听客户端连接  
-        //myThread.Start();
+        Console.WriteLine("Listen on: " + ip + ":" + port.ToString());
+        Console.WriteLine("Root: " + RequestHandler.WebRoot);
+        Console.WriteLine("\nServer Started\n");
 
-        IPAddress ipAddress = IPAddress.Parse(listen_ip);//IPAddress.Loopback;//Parse("127.0.0.1");
+        IPAddress ipAddress = IPAddress.Parse(ip);//IPAddress.Loopback;
         IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
 
+        // 绑定socket到指定地址和端口号上、等待连接 
         // Bind the socket to the local endpoint and listen for incoming connections.
         try
         {
@@ -55,13 +52,16 @@ public class SocketServer
             m_socket.Listen(100);
             while (true)
             {
+                // 将事件状态设置为非终止，从而导致线程受阻。
                 // Set the event to nonsignaled state.
                 manualResetEvent.Reset();
 
+                // 开始一个异步socket，等待连接
                 // Start an asynchronous socket to listen for connections.
                 Console.WriteLine("Waiting for a connection");
                 m_socket.BeginAccept(new AsyncCallback(AcceptCallback),m_socket);
 
+                // 阻止当前线程，直到当前 System.Threading.WaitHandle 收到信号。
                 // Wait until a connection is made before continuing.
                 manualResetEvent.WaitOne();
             }
@@ -75,14 +75,17 @@ public class SocketServer
         Console.Read();
     }
 
-    public static void AcceptCallback(IAsyncResult ar)
+    // 收到消息回调
+    public static void AcceptCallback(IAsyncResult result)
     {
+        // 将事件状态设置为有信号，从而允许一个或多个等待线程继续执行。
         // Signal the main thread to continue.
         manualResetEvent.Set();
 
+        // 获取处理这个事件的对应handler。异步接受传入的连接尝试，并创建一个新 System.Net.Sockets.Socket 来处理远程主机通信。
         // Get the socket that handles the client request.
-        Socket listener = (Socket)ar.AsyncState;
-        Socket handler = listener.EndAccept(ar);
+        Socket listener = (Socket)result.AsyncState;
+        Socket handler = listener.EndAccept(result);
 
         // Create the state object.
         StateObject state = new StateObject();
@@ -90,27 +93,26 @@ public class SocketServer
         handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
     }
 
-    public static void ReadCallback(IAsyncResult ar)
+    public static void ReadCallback(IAsyncResult result)
     {
         String content = String.Empty;
 
-        // Retrieve the state object and the handler socket
-        // from the asynchronous state object.
-        StateObject state = (StateObject)ar.AsyncState;
+        // Retrieve the state object and the handler socket from the asynchronous state object.
+        StateObject state = (StateObject)result.AsyncState;
         Socket handler = state.workSocket;
 
         // Read data from the client socket. 
-        int bytesRead = handler.EndReceive(ar);
+        int bytesRead = handler.EndReceive(result);
 
         if (bytesRead > 0)
         {
-            RequestHandler reqh = state.reqhandler;
-            reqh.PushRecived(state.buffer, bytesRead);
+            RequestHandler reqHandler = state.reqHandler;
+            reqHandler.PushRecived(state.buffer, bytesRead);
             //Console.WriteLine("Read {0} bytes from socket. ", bytesRead);
-            if (reqh.IsAllRecived())
+            if (reqHandler.IsAllRecived())
             {
                 //Send(handler, reqh.GetResponseData());
-                reqh.BeginResponse(new SocketAgent(handler));
+                reqHandler.BeginResponse(new SocketAgent(handler));
             }
             else
             {

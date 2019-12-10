@@ -7,6 +7,17 @@ namespace Server
     {
         public static int Main(string[] args)
         {
+            InitSocketServer(args);
+            return 0;
+        }
+
+        public static void InitSocketServer(string[] args)
+        {
+            SocketServer.Instance.StartServer();
+        }
+
+        public static int InitHttpServer(string[] args)
+        {
             if (args.Contains("-h"))
             {
                 Console.WriteLine("Ussage:\n  " + args[0]
@@ -21,21 +32,16 @@ namespace Server
             string path = GetOption(args, "d");
             if (!string.IsNullOrEmpty(path) && System.IO.Directory.Exists(path))
                 RequestHandler.WebRoot = path;
+
             string portstr = GetOption(args, "p");
             int port = 8090;
             if (!string.IsNullOrEmpty(portstr))
-            {
                 int.TryParse(portstr, out port);
-            }
+
             string ip = GetOption(args, "l");
             ip = string.IsNullOrEmpty(ip) ? "127.0.0.1" : ip;
 
-            Console.WriteLine("Listen on: " + ip + ":" + port.ToString());
-
-            Console.WriteLine("Root: " + RequestHandler.WebRoot);
-
-            Console.WriteLine("\nServer Started\n");
-            SocketServer.Instance.InitSocket(ip, port);
+            HttpServer.Instance.StartServer(ip, port);
             return 0;
         }
 
