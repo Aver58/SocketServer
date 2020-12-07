@@ -1,7 +1,0 @@
-F:\WinForm_Socket\Aver3\Server\bin\Debug\Server.exe.config
-F:\WinForm_Socket\Aver3\Server\bin\Debug\Server.exe
-F:\WinForm_Socket\Aver3\Server\bin\Debug\Server.pdb
-F:\WinForm_Socket\Aver3\Server\obj\Debug\Server.csprojAssemblyReference.cache
-F:\WinForm_Socket\Aver3\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
-F:\WinForm_Socket\Aver3\Server\obj\Debug\Server.exe
-F:\WinForm_Socket\Aver3\Server\obj\Debug\Server.pdb
