@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Sockets;
 
 namespace Server
 {
@@ -7,13 +8,18 @@ namespace Server
     {
         public static int Main(string[] args)
         {
-            InitSocketServer(args);
+            InitUDPServer(args);
             return 0;
         }
 
-        public static void InitSocketServer(string[] args)
+        public static void InitTCPServer(string[] args)
         {
-            SocketServer.Instance.StartServer();
+            TcpServer.Instance.StartTcpServer();
+        }
+
+        public static void InitUDPServer(string[] args)
+        {
+            KcpUDPServer.instance.StartUdpServer();
         }
 
         public static int InitHttpServer(string[] args)
