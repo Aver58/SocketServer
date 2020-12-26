@@ -22,9 +22,7 @@ public class TcpServer
     public static TcpServer Instance { get { return InstanceHolder.Instance; } }
     #endregion
 
-    private object m_lockUdp = new object();
     private static Socket m_server;
-    private UdpClient m_udp;
     private Dictionary<Socket, ClientInfo> m_clientPool = new Dictionary<Socket, ClientInfo>();
     private List<NetMsgData> m_msgPool = new List<NetMsgData>();
 

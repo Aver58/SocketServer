@@ -19,7 +19,7 @@ namespace Server
 
         public static void InitUDPServer(string[] args)
         {
-            KcpUDPServer.instance.StartUdpServer();
+            KcpUDPServer.instance.StartWithSocket();
         }
 
         public static int InitHttpServer(string[] args)
