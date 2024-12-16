@@ -1,12 +1,14 @@
 ﻿#region Copyright © 2018 Aver. All rights reserved.
+
 /*
 =====================================================
  AverFrameWork v1.0
- Filename:    SocketServer.cs
+ Filename:    TeddyServer.cs
  Author:      Zeng Zhiwei
  Time:        2019/12/8 16:21:40
 =====================================================
 */
+
 #endregion
 
 using System;
@@ -14,29 +16,24 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Server.Framework.Network;
 
-public class TcpServer
-{
-    #region Instance
-    private class InstanceHolder { public static TcpServer Instance = new TcpServer(); }
-    public static TcpServer Instance { get { return InstanceHolder.Instance; } }
-    #endregion
 
-    private static Socket m_server;
+public class TcpServerDemo : Singleton<TcpServerDemo> {
+    private Socket server;
     private Dictionary<Socket, ClientInfo> m_clientPool = new Dictionary<Socket, ClientInfo>();
     private List<NetMsgData> m_msgPool = new List<NetMsgData>();
 
-    public void StartTcpServer(string ip = "127.0.0.1", int port = 8090)
-    {
+    public void StartTcpServer(string ip = "127.0.0.1", int port = 8090) {
         //创建一个新的Socket,这里我们使用最常用的基于TCP的Stream Socket（流式套接字）
-        m_server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        m_server.Bind(new IPEndPoint(IPAddress.Parse(ip), port));
+        server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        server.Bind(new IPEndPoint(IPAddress.Parse(ip), port));
 
         //启动监听，并且设置一个最大的队列长度
-        m_server.Listen(100);
+        server.Listen(100);
 
         //开始接受客户端连接请求
-        m_server.BeginAccept(new AsyncCallback(OnOneClientAccepted), m_server);
+        server.BeginAccept(new AsyncCallback(OnOneClientAccepted), server);
 
         //Run(ip, port);
 
@@ -44,32 +41,26 @@ public class TcpServer
         Console.Read();
     }
 
-    private void SendOneMsg(Socket clientSocket, byte[] buffer)
-    {
+    private void SendOneMsg(Socket clientSocket, byte[] buffer) {
         if (!clientSocket.IsConnected())
             return;
         clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, null, null);
     }
 
     // 广播
-    private void Broadcast()
-    {
-        Thread broadcast = new Thread(() =>
-        {
-            while (true)
-            {
-                if (m_msgPool.Count > 0)
-                {
+    private void Broadcast() {
+        Thread broadcast = new Thread(() => {
+            while (true) {
+                if (m_msgPool.Count > 0) {
                     byte[] msg = ProtoBufUtil.PackNetMsg(m_msgPool[0]);
-                    foreach (KeyValuePair<Socket, ClientInfo> cs in m_clientPool)
-                    {
+                    foreach (KeyValuePair<Socket, ClientInfo> cs in m_clientPool) {
                         // client客户端socket对象
                         Socket client = cs.Key;
-                        if (client.Connected)
-                        {
+                        if (client.Connected) {
                             client.Send(msg, msg.Length, SocketFlags.None);
                         }
                     }
+
                     m_msgPool.RemoveAt(0);
                 }
             }
@@ -78,10 +69,8 @@ public class TcpServer
         broadcast.Start();
     }
 
-    public void Run(string ip = "127.0.0.1", int port = 8090)
-    {
-        Thread serverSocketThraed = new Thread(() =>
-        {
+    public void Run(string ip = "127.0.0.1", int port = 8090) {
+        Thread serverSocketThraed = new Thread(() => {
             Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             server.Bind(new IPEndPoint(IPAddress.Parse(ip), port));
             server.Listen(10);
@@ -93,14 +82,12 @@ public class TcpServer
     }
 
     // 收到一个客户端请求
-    public void OnOneClientAccepted(IAsyncResult result)
-    {
+    public void OnOneClientAccepted(IAsyncResult result) {
         Socket server = result.AsyncState as Socket;
         //这就是客户端的Socket实例，我们后续可以将其保存起来
         Socket client = server.EndAccept(result);
 
-        try
-        {
+        try {
             //接受多个客户端 ，准备接受下一个客户端请求
             server.BeginAccept(new AsyncCallback(OnOneClientAccepted), server);
 
@@ -120,24 +107,20 @@ public class TcpServer
 
             //接收客户端的消息(这个和在客户端实现的方式是一样的）
             client.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(OnReceiveMessage), client);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Console.WriteLine("Error :\r\n\t" + ex.ToString());
         }
     }
 
     //接收客户端的消息
-    public void OnReceiveMessage(IAsyncResult result)
-    {
+    public void OnReceiveMessage(IAsyncResult result) {
         Socket client = result.AsyncState as Socket;
         //Console.WriteLine($"{client.GetHost()} // {client.GetRemoteHost()}");
 
         if (client == null || !m_clientPool.ContainsKey(client))
             return;
 
-        try
-        {
+        try {
             var length = client.EndReceive(result);
             if (length <= 0)
                 return;
@@ -148,9 +131,7 @@ public class TcpServer
 
             //接收下一个消息(因为这是一个递归的调用，所以这样就可以一直接收消息了）
             client.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(OnReceiveMessage), client);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Console.WriteLine(ex.Message);
             client.Disconnect(true);
             Console.WriteLine("One Client {0} disconnet", m_clientPool[client].Name);
@@ -158,14 +139,12 @@ public class TcpServer
         }
     }
 
-    private void HandleMessage(Socket client,byte[] buffer)
-    {
+    private void HandleMessage(Socket client, byte[] buffer) {
         NetMsgData data = ProtoBufUtil.UnpackNetMsg(buffer);
         var protoID = data.ID;
         Console.WriteLine("[Receive]{0} | {1} | {2} | {3}", client.RemoteEndPoint, data.ID, data.Data, DateTime.Now);
-        switch (protoID)
-        {
-            case(OpCode.C2S_TestRequest):
+        switch (protoID) {
+            case (OpCode.C2S_TestRequest):
                 data.ID = OpCode.S2C_TestResponse;
                 data.Data = "Test OK!!";
                 SendOneMsg(client, ProtoBufUtil.PackNetMsg(data));
@@ -178,57 +157,43 @@ public class TcpServer
         //m_msgPool.Add(data);
     }
 
-    public void HeartBeat(Socket client)
-    {
+    public void HeartBeat(Socket client) {
         //实现每隔两秒钟给服务器发一个消息
         //这里我们使用了一个定时器
         var timer = new System.Timers.Timer();
         timer.Interval = 2000D;
         timer.Enabled = true;
-        timer.Elapsed += (o, a) =>
-        {
+        timer.Elapsed += (o, a) => {
             //检测客户端的活动状态
-            if (client.Connected)
-            {
-                try
-                {
+            if (client.Connected) {
+                try {
                     SendOneMsg(client, ProtoBufUtil.PackNetMsg(new NetMsgData(0, "[Server]HeartBeat:" + DateTime.Now.ToString())));
-                 
+
                     Console.WriteLine("[Server]HeartBeat:" + client.GetHost() + DateTime.Now.ToString());
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     Console.WriteLine(ex.Message);
                 }
-            }
-            else
-            {
+            } else {
                 timer.Stop();
                 timer.Enabled = false;
                 Console.WriteLine("Client is disconnected, the timer is stop.");
             }
-
         };
         timer.Start();
     }
 }
 
-public class ClientInfo
-{
+public class ClientInfo {
     public byte[] buffer;
     public string NickName { get; set; }
     public EndPoint Id { get; set; }
     public IntPtr handle { get; set; }
-    public string Name
-    {
-        get
-        {
-            if (!string.IsNullOrEmpty(NickName))
-            {
+
+    public string Name {
+        get {
+            if (!string.IsNullOrEmpty(NickName)) {
                 return NickName;
-            }
-            else
-            {
+            } else {
                 return string.Format("{0}#{1}", Id, handle);
             }
         }

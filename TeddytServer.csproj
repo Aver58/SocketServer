@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Server</RootNamespace>
     <AssemblyName>Server</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -49,33 +50,48 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HttpSocket\IServerScript.cs" />
-    <Compile Include="HttpSocket\Request.cs" />
-    <Compile Include="HttpSocket\Response.cs" />
-    <Compile Include="HttpSocket\StateObject.cs" />
-    <Compile Include="Log\Debug.cs" />
+    <Compile Include="Framework\DatabaseServer.cs" />
+    <Compile Include="Framework\GatewayServer.cs" />
+    <Compile Include="Framework\Logger\Debug.cs" />
+    <Compile Include="Framework\LogicServer.cs" />
+    <Compile Include="Framework\Network\BufferPool.cs" />
+    <Compile Include="Framework\Network\HttpSocket\HttpServer.cs" />
+    <Compile Include="Framework\Network\HttpSocket\IServerScript.cs" />
+    <Compile Include="Framework\Network\HttpSocket\Request.cs" />
+    <Compile Include="Framework\Network\HttpSocket\RequestHandler.cs" />
+    <Compile Include="Framework\Network\HttpSocket\Response.cs" />
+    <Compile Include="Framework\Network\HttpSocket\StateObject.cs" />
+    <Compile Include="Framework\Network\InboundPacketManager.cs" />
+    <Compile Include="Framework\Network\KCPServer\KCPPacket.cs" />
+    <Compile Include="Framework\Network\KCPServer\KcpUDPServer.cs" />
+    <Compile Include="Framework\Network\KCPServer\KCP\ByteBuffer.cs" />
+    <Compile Include="Framework\Network\KCPServer\KCP\KCP.cs" />
+    <Compile Include="Framework\Network\KCPServer\KCP\UDPSession.cs" />
+    <Compile Include="Framework\Network\KCPServer\NetDefine.cs" />
+    <Compile Include="Framework\Network\KCPServer\Packet.cs" />
+    <Compile Include="Framework\Network\OutboundPacketManager.cs" />
+    <Compile Include="Framework\Network\ProtoBuf\NetMsgData.cs" />
+    <Compile Include="Framework\Network\ProtoBuf\OpCode.cs" />
+    <Compile Include="Framework\Network\ProtoBuf\ProtoBufUtil.cs" />
+    <Compile Include="Framework\Network\Session.cs" />
+    <Compile Include="Framework\Network\TCPClient.cs" />
+    <Compile Include="Framework\Network\TCPObject.cs" />
+    <Compile Include="Framework\Network\TcpServer.cs" />
+    <Compile Include="Framework\Network\TCPServer\TcpServerDemo.cs" />
+    <Compile Include="Framework\Network\TCPSynchronizeContext.cs" />
+    <Compile Include="Framework\Util\Singleton.cs" />
+    <Compile Include="Framework\Util\SocketExtensions.cs" />
+    <Compile Include="Framework\Util\Timer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="HttpSocket\RequestHandler.cs" />
-    <Compile Include="HttpSocket\HttpServer.cs" />
-    <Compile Include="SocketServer\KCPServer\KCPPacket.cs" />
-    <Compile Include="SocketServer\KCPServer\KcpUDPServer.cs" />
-    <Compile Include="SocketServer\KCPServer\KCP\ByteBuffer.cs" />
-    <Compile Include="SocketServer\KCPServer\KCP\KCP.cs" />
-    <Compile Include="SocketServer\KCPServer\KCP\UDPSession.cs" />
-    <Compile Include="SocketServer\KCPServer\NetDefine.cs" />
-    <Compile Include="SocketServer\KCPServer\Packet.cs" />
-    <Compile Include="SocketServer\Singleton.cs" />
-    <Compile Include="SocketServer\TCP\TcpServer.cs" />
-    <Compile Include="SocketServer\ProtoBuf\NetMsgData.cs" />
-    <Compile Include="SocketServer\ProtoBuf\OpCode.cs" />
-    <Compile Include="SocketServer\ProtoBuf\ProtoBufUtil.cs" />
-    <Compile Include="SocketServer\SocketExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Game\" />
+    <Folder Include="Test\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

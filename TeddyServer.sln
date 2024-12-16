@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.852
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketServer", "SocketServer.csproj", "{CA00A7E9-E14E-4D30-BFB5-B61255D51D8A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeddytServer", "TeddytServer.csproj", "{CA00A7E9-E14E-4D30-BFB5-B61255D51D8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -14,12 +14,12 @@ namespace Server
 
         public static void InitTCPServer(string[] args)
         {
-            TcpServer.Instance.StartTcpServer();
+            TcpServerDemo.Instance.StartTcpServer();
         }
 
         public static void InitUDPServer(string[] args)
         {
-            KcpUDPServer.instance.StartWithSocket();
+            KcpUDPServer.Instance.StartWithSocket();
         }
 
         public static int InitHttpServer(string[] args)
