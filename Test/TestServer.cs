@@ -1,18 +1,22 @@
 using System;
+using System.Net.Sockets;
 using Server.Framework.Network;
 
 namespace Server.Test {
     public class TestServer {
+        private TCPServer server;
         public void InitTCPServer() {
             var ip = "127.0.0.1";
             var port = 8090;
-            var server = new TCPServer();
+            server = new TCPServer();
             server.Start(ip, port, 30, 0, OnSocketError, OnSocketData, OnSocketAccept);
         }
 
         private void OnSocketAccept(int opaque, long sessionId, string ip, int port) {
             // TODO: Implement accept handle
             Console.WriteLine($"OnSocketAccept: sessionId:{sessionId} ip {ip} port {port}");
+            Session session = server.GetSessionBy(sessionId);
+            // session.Write()
         }
 
         private void OnSocketData(int opaque, long sessionId, byte[] bytes, int packetSize) {

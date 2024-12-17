@@ -94,14 +94,18 @@ public class TcpServerDemo : Singleton<TcpServerDemo> {
             byte[] buffer = new byte[1024];
 
             //给客户端发送一个欢迎消息
-            SendOneMsg(client, ProtoBufUtil.PackNetMsg(new NetMsgData(0, "[Server]Hi there, I accept you request at " + DateTime.Now.ToString())));
+            SendOneMsg(client, ProtoBufUtil.PackNetMsg(new NetMsgData() {
+               ID = 0,
+               Data = "[Server]Hi there, I accept you request at " + DateTime.Now
+            }));
+
             ClientInfo info = new ClientInfo();
             info.Id = client.RemoteEndPoint;
             info.handle = client.Handle;
             info.buffer = buffer;
             m_clientPool.Add(client, info);
 
-            Console.WriteLine(string.Format("One Client {0} connected!!", client.RemoteEndPoint));
+            Console.WriteLine($"One Client {client.RemoteEndPoint} connected!!");
 
             //HeartBeat(client);
 
@@ -167,7 +171,10 @@ public class TcpServerDemo : Singleton<TcpServerDemo> {
             //检测客户端的活动状态
             if (client.Connected) {
                 try {
-                    SendOneMsg(client, ProtoBufUtil.PackNetMsg(new NetMsgData(0, "[Server]HeartBeat:" + DateTime.Now.ToString())));
+                    SendOneMsg(client, ProtoBufUtil.PackNetMsg(new NetMsgData() {
+                        ID = 0,
+                        Data = "[Server]Hi there, I accept you request at " + DateTime.Now
+                    }));
 
                     Console.WriteLine("[Server]HeartBeat:" + client.GetHost() + DateTime.Now.ToString());
                 } catch (Exception ex) {

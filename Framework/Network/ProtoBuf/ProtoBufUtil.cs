@@ -17,16 +17,15 @@ using System.IO;
 
 public class ProtoBufUtil {
     // 序列化  
-    static public byte[] Serialize<T>(T msg) {
-        byte[] result = null;
-        if (msg != null) {
-            using (var stream = new MemoryStream()) {
-                Serializer.Serialize(stream, msg);
-                result = stream.ToArray();
-            }
+    public static byte[] Serialize<T>(T msg) {
+        if (msg == null) {
+            throw new ArgumentNullException(nameof(msg), "对象不能为空");
         }
 
-        return result;
+        using (var memoryStream = new MemoryStream()) {
+            Serializer.Serialize(memoryStream, msg);
+            return memoryStream.ToArray();
+        }
     }
 
     // 封包，依次写入协议数据长度、协议id、协议内容
@@ -68,7 +67,10 @@ public class ProtoBufUtil {
             string pbdata = Deserialize<string>(reader.ReadBytes(msgLen));
             // 扣除4字节
             if (msgLen <= msgData.Length - 4) {
-                NetMsgData data = new NetMsgData(protoId, pbdata);
+                NetMsgData data = new NetMsgData() {
+                    ID = protoId,
+                    Data = pbdata
+                };
                 return data;
             } else {
                 Console.WriteLine($"协议长度错误 {msgData.Length}");

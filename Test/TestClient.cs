@@ -23,8 +23,7 @@ namespace Server.Test {
                 string content = "";
                 Random rand = new Random(DateTime.Now.Millisecond);
                 int contentSize = rand.Next(5, 15);
-                for (int i = 0; i < contentSize; i++)
-                {
+                for (int i = 0; i < contentSize; i++) {
                     content += arr[i % arr.Count()];
                 }
                 m_hashCode = content.GetHashCode();
