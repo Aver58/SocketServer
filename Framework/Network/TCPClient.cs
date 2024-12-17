@@ -4,7 +4,7 @@ using System.Net.Sockets;
 
 namespace Server.Framework.Network {
     public delegate void ConnectCompleteHandle(int opaque, long sessionId, string ip, int port);
-
+    // TCP客户端处理类，它的功能包括注册业务层传入的各种回调函数，管理Session类实例，TCPClient类实例主动连接服务端时，会创建一个连接用的Session实例
     public class TCPClient : TCPObject {
         // Connect to server sessions
         private int m_totalSessionId = 0;
@@ -62,6 +62,7 @@ namespace Server.Framework.Network {
             return session;
         }
 
+        // main thread 负责消费IO事件
         public void Loop() {
             TCPSynchronizeContext.GetInstance().Loop();
         }

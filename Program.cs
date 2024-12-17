@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Sockets;
 
-namespace Server
-{
-    class Program
-    {
+namespace Server {
+    class Program {
         public static int Main(string[] args)
         {
-            InitUDPServer(args);
+            // InitUDPServer(args);
             return 0;
         }
 
@@ -51,18 +48,16 @@ namespace Server
             return 0;
         }
 
-        private static string GetOption(string[] args, string opt)
-        {
-            var it = ((args) as System.Collections.Generic.IEnumerable<string>).GetEnumerator();
-            while (it.MoveNext())
-            {
-                if (it.Current[0] == '-' && it.Current.Substring(1) == opt && it.MoveNext())
-                {
-                    return it.Current;
+        private static string GetOption(string[] args, string opt) {
+            using (var it = (args as System.Collections.Generic.IEnumerable<string>).GetEnumerator()) {
+                while (it.MoveNext()) {
+                    if (it.Current != null && it.Current[0] == '-' && it.Current.Substring(1) == opt && it.MoveNext()) {
+                        return it.Current;
+                    }
                 }
-            }
 
-            return string.Empty;
+                return string.Empty;
+            }
         }
     }
 }

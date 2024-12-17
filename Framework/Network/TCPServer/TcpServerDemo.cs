@@ -154,7 +154,7 @@ public class TcpServerDemo : Singleton<TcpServerDemo> {
             default:
                 break;
         }
-        //m_msgPool.Add(data);
+        m_msgPool.Add(data);
     }
 
     public void HeartBeat(Socket client) {

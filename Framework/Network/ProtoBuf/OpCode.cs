@@ -9,8 +9,7 @@
 */
 #endregion
 
-public class OpCode
-{
+public class OpCode {
     public const ushort S2C_Connect_Success = 100;
     public const ushort C2S_TestRequest = 101;
     public const ushort S2C_TestResponse = 102;
