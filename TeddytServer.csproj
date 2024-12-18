@@ -52,8 +52,9 @@
   <ItemGroup>
     <Compile Include="Framework\DatabaseServer.cs" />
     <Compile Include="Framework\GatewayServer.cs" />
-    <Compile Include="Framework\Logger\Debug.cs" />
     <Compile Include="Framework\LogicServer.cs" />
+    <Compile Include="Framework\MessageQueue\GlobalMQ.cs" />
+    <Compile Include="Framework\MessageQueue\NetworkPacketQueue.cs" />
     <Compile Include="Framework\Network\BufferPool.cs" />
     <Compile Include="Framework\Network\HttpSocket\HttpServer.cs" />
     <Compile Include="Framework\Network\HttpSocket\IServerScript.cs" />
@@ -80,9 +81,12 @@
     <Compile Include="Framework\Network\TCPServer\TcpServerDemo.cs" />
     <Compile Include="Framework\Network\TCPSynchronizeContext.cs" />
     <Compile Include="Framework\Server.cs" />
-    <Compile Include="Framework\Util\Singleton.cs" />
-    <Compile Include="Framework\Util\SocketExtensions.cs" />
-    <Compile Include="Framework\Util\Timer.cs" />
+    <Compile Include="Framework\Service\Base\ServiceContext.cs" />
+    <Compile Include="Framework\Service\ServiceSlots.cs" />
+    <Compile Include="Framework\Utility\LoggerHelper.cs" />
+    <Compile Include="Framework\Utility\Singleton.cs" />
+    <Compile Include="Framework\Utility\SocketExtensions.cs" />
+    <Compile Include="Framework\Utility\Timer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test\TestClient.cs" />
@@ -93,6 +97,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Framework\Service\Logger\" />
     <Folder Include="Game\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

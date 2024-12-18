@@ -127,13 +127,13 @@ public class KcpUDPServer :Singleton<KcpUDPServer>
             }
             else if(n < 0)
             {
-                Debug.Log("Receive Message failed.");
+                Console.WriteLine("Receive Message failed.");
                 continue;
             }
             else
             {
                 recvBytes += n;
-                Debug.Log($"{recvBytes} / {sendBytes}");
+                Console.WriteLine($"{recvBytes} / {sendBytes}");
             }
         }
     }

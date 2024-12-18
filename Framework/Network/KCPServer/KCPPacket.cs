@@ -14,6 +14,8 @@
 //AAAAAA : 6 bit 
 //BB : 2 bit, PacketCMD
 //CCCC : data , only used in ConnectResponse, is conv
+using System;
+
 public class KCPPacket : Packet
 {
     public class KOperateStruct
@@ -39,7 +41,7 @@ public class KCPPacket : Packet
         int headSize = this.ReadShort();
         if(headSize + 2 != this.Size)
         {
-            Debug.Log("包长验证失败,headSize:{0}, pktSize:{1}", headSize, Size);
+            Console.WriteLine("包长验证失败,headSize:{0}, pktSize:{1}", headSize, Size);
             return null;
         }
         KOperateStruct optInfo = new KOperateStruct();
@@ -47,7 +49,7 @@ public class KCPPacket : Packet
         optInfo.flowID = this.ReadShort();
         optInfo.conv = (uint)this.ReadInt();
         optInfo.content = this.ReadInt();
-        Debug.Log("ParseOperatePkg,info:" + optInfo.ToString());
+        Console.WriteLine("ParseOperatePkg,info:" + optInfo.ToString());
         return optInfo;
     }
 }
