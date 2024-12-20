@@ -83,12 +83,43 @@
     <Compile Include="Framework\Server.cs" />
     <Compile Include="Framework\Service\Base\ServiceContext.cs" />
     <Compile Include="Framework\Service\ServiceSlots.cs" />
+    <Compile Include="Framework\Service\Timer.cs" />
     <Compile Include="Framework\Utility\LoggerHelper.cs" />
     <Compile Include="Framework\Utility\Singleton.cs" />
     <Compile Include="Framework\Utility\SocketExtensions.cs" />
     <Compile Include="Framework\Utility\Timer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proto\ProtoCS\Common.cs" />
+    <Compile Include="Proto\ProtoCS\Logger.cs" />
+    <Compile Include="Proto\ProtoCS\NetProtocol.cs" />
+    <Compile Include="sproto\gen_example\BenchMark.cs" />
+    <Compile Include="sproto\gen_example\Member.cs" />
+    <Compile Include="sproto\gen_example\TestAll.cs" />
+    <Compile Include="sproto\gen_example\TestDecAndBinary.cs" />
+    <Compile Include="sproto\gen_example\TestMap.cs" />
+    <Compile Include="sproto\gen_example\TestRpc.cs" />
+    <Compile Include="sproto\src\Package.cs" />
+    <Compile Include="sproto\src\ProtocolBase.cs" />
+    <Compile Include="sproto\src\ProtocolFunctionDictionary.cs" />
+    <Compile Include="sproto\src\SprotoPack.cs" />
+    <Compile Include="sproto\src\SprotoRpc.cs" />
+    <Compile Include="sproto\src\SprotoStream.cs" />
+    <Compile Include="sproto\src\SprotoTypeBase.cs" />
+    <Compile Include="sproto\src\SprotoTypeDeserialize.cs" />
+    <Compile Include="sproto\src\SprotoTypeFieldOP.cs" />
+    <Compile Include="sproto\src\SprotoTypeReader.cs" />
+    <Compile Include="sproto\src\SprotoTypeSerialize.cs" />
+    <Compile Include="sproto\src\SprotoTypeSize.cs" />
+    <Compile Include="sproto\testCase\TestCaseBase.cs" />
+    <Compile Include="sproto\testCase\TestCaseMap.cs" />
+    <Compile Include="sproto\testCase\TestCaseRpc.cs" />
+    <Compile Include="sproto\testCase\TestCaseSproto.cs" />
+    <Compile Include="sproto\testCase\TestCaseSprotoPack.cs" />
+    <Compile Include="sproto\testCase\TestCaseSprotoTypeDeserialize.cs" />
+    <Compile Include="sproto\testCase\TestCaseSprotoTypeFieldOP.cs" />
+    <Compile Include="sproto\testCase\TestCaseSprotoTypeSerialize.cs" />
+    <Compile Include="sproto\testCase\TestCaseTestAll.cs" />
     <Compile Include="Test\TestClient.cs" />
     <Compile Include="Test\TestServer.cs" />
   </ItemGroup>
@@ -99,6 +130,17 @@
   <ItemGroup>
     <Folder Include="Framework\Service\Logger\" />
     <Folder Include="Game\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Proto\ProtoFile\Common.sproto" />
+    <Content Include="Proto\ProtoFile\Logger.sproto" />
+    <Content Include="sproto\.gitmodules" />
+    <Content Include="sproto\gen_example\Member.sproto" />
+    <Content Include="sproto\gen_example\TestAll.sproto" />
+    <Content Include="sproto\gen_example\TestDecAndBinary.sproto" />
+    <Content Include="sproto\gen_example\TestMap.sproto" />
+    <Content Include="sproto\gen_example\TestRpc.sproto" />
+    <Content Include="sproto\README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

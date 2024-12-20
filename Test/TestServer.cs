@@ -13,9 +13,9 @@ namespace Server.Test {
         }
 
         private void OnSocketAccept(int opaque, long sessionId, string ip, int port) {
-            // TODO: Implement accept handle
             Console.WriteLine($"OnSocketAccept: sessionId:{sessionId} ip {ip} port {port}");
             Session session = server.GetSessionBy(sessionId);
+
             // session.Write()
         }
 

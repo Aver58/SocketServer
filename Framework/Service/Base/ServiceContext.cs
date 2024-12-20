@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using NetSprotoType;
 using Server.Framework.MessageQueue;
 using Server.Framework.Utility;
 
@@ -100,19 +101,18 @@ namespace Server.Framework.Service {
         }
 
         private void OnError(Message msg) {
-            // todo protobuf
-            // NetProtocol instance = NetProtocol.GetInstance();
-            // int tag = instance.GetTag("Error");
-            // Error.response sprotoError = (Error.response)instance.Protocol.GenResponse(tag, msg.Data);
-            //
-            // RPCResponseContext responseCallback = null;
-            // bool isExist = m_responseCallbacks.TryGetValue(msg.RPCSession, out responseCallback);
-            // if (isExist) {
-            //     responseCallback.Callback(responseCallback.Context, msg.Method, Encoding.ASCII.GetBytes(sprotoError.errorText), (RPCError)sprotoError.errorCode);
-            //     m_responseCallbacks.Remove(msg.RPCSession);
-            // } else {
-            //     LoggerHelper.Info(m_serviceAddress, string.Format("Service:{0} session:{1} get error:{2}; error text is {3}", m_serviceAddress, msg.RPCSession, sprotoError.errorCode, sprotoError.errorText));
-            // }
+            NetProtocol instance = NetProtocol.GetInstance();
+            int tag = instance.GetTag("Error");
+            Error.response sprotoError = (Error.response)instance.Protocol.GenResponse(tag, msg.Data);
+
+            RPCResponseContext responseCallback = null;
+            bool isExist = m_responseCallbacks.TryGetValue(msg.RPCSession, out responseCallback);
+            if (isExist) {
+                responseCallback.Callback(responseCallback.Context, msg.Method, Encoding.ASCII.GetBytes(sprotoError.errorText), (RPCError)sprotoError.errorCode);
+                m_responseCallbacks.Remove(msg.RPCSession);
+            } else {
+                LoggerHelper.Info(m_serviceAddress, string.Format("Service:{0} session:{1} get error:{2}; error text is {3}", m_serviceAddress, msg.RPCSession, sprotoError.errorCode, sprotoError.errorText));
+            }
         }
 
         protected virtual void OnSocketCommand(Message msg) { }
@@ -137,7 +137,7 @@ namespace Server.Framework.Service {
             msg.RPCSession = session;
             msg.Type = type;
 
-            ServiceContext targetService = ServiceSlots.GetInstance().Get(destination);
+            ServiceContext targetService = ServiceSlots.Instance.Get(destination);
             targetService.Push(msg);
         }
 
@@ -146,7 +146,7 @@ namespace Server.Framework.Service {
         }
 
         protected void Send(string destination, string method, byte[] param) {
-            int serviceId = ServiceSlots.GetInstance().Name2Id(destination);
+            int serviceId = ServiceSlots.Instance.Name2Id(destination);
             Send(serviceId, method, param);
         }
 
@@ -166,7 +166,7 @@ namespace Server.Framework.Service {
         }
 
         protected void Call(string destination, string method, byte[] param, SSContext context, RPCCallback cb) {
-            int serviceId = ServiceSlots.GetInstance().Name2Id(destination);
+            int serviceId = ServiceSlots.Instance.Name2Id(destination);
             Call(serviceId, method, param, context, cb);
         }
 
@@ -175,11 +175,10 @@ namespace Server.Framework.Service {
         }
 
         protected void DoError(int destination, int session, RPCError errorCode, string errorText) {
-            // todo protobuf
-            // Error.response error = new Error.response();
-            // error.errorCode = (int)errorCode;
-            // error.errorText = errorText;
-            // PushToService(destination, "OnError", error.encode(), MessageType.Error, session);
+            Error.response error = new Error.response();
+            error.errorCode = (int)errorCode;
+            error.errorText = errorText;
+            PushToService(destination, "OnError", error.encode(), MessageType.Error, session);
         }
 
         protected void RegisterServiceMethods(string methodName, Method method) {
@@ -187,26 +186,26 @@ namespace Server.Framework.Service {
         }
 
         protected void Timeout(SSContext context, long timeout, TimeoutCallback callback) {
-            // long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            // if (timeout <= 0) {
-            //     callback(context, timestamp);
-            // } else {
-            //     if (m_totalServiceSession >= Int32.MaxValue) {
-            //         m_totalServiceSession = 0;
-            //     }
-            //
-            //     SSTimerNode timerNode = new SSTimerNode();
-            //     timerNode.Opaque = m_serviceAddress;
-            //     timerNode.Session = ++m_totalServiceSession;
-            //     timerNode.TimeoutTimestamp = timestamp + timeout;
-            //
-            //     SSTimer.GetInstance().Add(timerNode);
-            //
-            //     TimeoutContext timeoutContext = new TimeoutContext();
-            //     timeoutContext.Callback = callback;
-            //     timeoutContext.Context = context;
-            //     m_timeoutCallbacks.Add(timerNode.Session, timeoutContext);
-            // }
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            if (timeout <= 0) {
+                callback(context, timestamp);
+            } else {
+                if (m_totalServiceSession >= Int32.MaxValue) {
+                    m_totalServiceSession = 0;
+                }
+
+                SSTimerNode timerNode = new SSTimerNode();
+                timerNode.Opaque = m_serviceAddress;
+                timerNode.Session = ++m_totalServiceSession;
+                timerNode.TimeoutTimestamp = timestamp + timeout;
+
+                SSTimer.Instance.Add(timerNode);
+
+                TimeoutContext timeoutContext = new TimeoutContext();
+                timeoutContext.Callback = callback;
+                timeoutContext.Context = context;
+                m_timeoutCallbacks.Add(timerNode.Session, timeoutContext);
+            }
         }
 
         public Message Pop() {

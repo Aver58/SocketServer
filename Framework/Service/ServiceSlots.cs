@@ -3,8 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 
 namespace Server.Framework.Service {
-    class ServiceSlots {
-        private static ServiceSlots m_instance;
+    class ServiceSlots : Singleton<ServiceSlots> {
         private static ReaderWriterLock rwlock = new ReaderWriterLock();
 
         private ServiceContext[] m_slots;
@@ -12,15 +11,6 @@ namespace Server.Framework.Service {
         private const int DefaultServiceSize = 8;
 
         ConcurrentDictionary<string, int> m_service2name = new ConcurrentDictionary<string, int>();
-
-        // We should call this function first in main thread
-        public static ServiceSlots GetInstance() {
-            if (m_instance == null) {
-                m_instance = new ServiceSlots();
-            }
-
-            return m_instance;
-        }
 
         public int Add(ServiceContext service) {
             if (service.GetId() > 0) {
