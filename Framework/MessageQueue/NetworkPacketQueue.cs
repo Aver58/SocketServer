@@ -19,7 +19,7 @@ namespace TeddyServer.Framework.MessageQueue {
     enum SocketMessageType {
         Connect = 1,
         Disconnect = 2,
-        DATA = 3,
+        DATA = 3,   // 下发数据，回包
     }
 
     class SocketMessage {

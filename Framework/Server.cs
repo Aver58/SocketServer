@@ -32,14 +32,13 @@ namespace TeddyServer.Framework {
             string bootConfigText = ConfigHelper.LoadFromFile(bootConf);
             m_bootConfig = JObject.Parse(bootConfigText);
 
-            if (m_bootConfig.ContainsKey("Gateway")) {
-                var gatewayJson = m_bootConfig["Gateway"];
+            if (m_bootConfig.TryGetValue("Gateway", out var gatewayJson)) {
                 m_gateIp = gatewayJson["Host"].ToString();
                 m_gatePort = Int32.Parse(gatewayJson["Port"].ToString());
             }
 
-            if (m_bootConfig.ContainsKey("ThreadNum")) {
-                int threadNum = (int)m_bootConfig["ThreadNum"];
+            if (m_bootConfig.TryGetValue("ThreadNum", out var value)) {
+                int threadNum = (int)value;
                 if (threadNum > 0)
                     m_workerNum = threadNum;
             }
@@ -76,7 +75,6 @@ namespace TeddyServer.Framework {
 
             m_tcpGate = new TCPServer();
             m_tcpObjectContainer.Add(m_tcpGate);
-
             int gatewayId = SparkServerUtility.NewService(gatewayClass, gatewayName);
             m_tcpGate.Start(m_gateIp, m_gatePort, 30, gatewayId, OnSessionError, OnReadPacketComplete, OnAcceptComplete);
         }
@@ -116,8 +114,7 @@ namespace TeddyServer.Framework {
             }
         }
 
-        private void OnSessionError(int opaque, long sessionId, string remoteEndPoint, int errorCode, string errorText)
-        {
+        private void OnSessionError(int opaque, long sessionId, string remoteEndPoint, int errorCode, string errorText) {
             SocketError sprotoSocketError = new SocketError();
             sprotoSocketError.errorCode = errorCode;
             sprotoSocketError.errorText = errorText;
@@ -136,8 +133,8 @@ namespace TeddyServer.Framework {
             service.Push(msg);
         }
 
-        private void OnReadPacketComplete(int opaque, long sessionId, byte[] buffer, int packetSize)
-        {
+        // 收到 client 包回调
+        private void OnReadPacketComplete(int opaque, long sessionId, byte[] buffer, int packetSize) {
             SocketData data = new SocketData();
             data.connection = sessionId;
             data.buffer = Convert.ToBase64String(buffer);
@@ -154,8 +151,8 @@ namespace TeddyServer.Framework {
             service.Push(msg);
         }
 
-        private void OnAcceptComplete(int opaque, long sessionId, string ip, int port)
-        {
+        // client 连接回调
+        private void OnAcceptComplete(int opaque, long sessionId, string ip, int port) {
             SocketAccept accept = new SocketAccept();
             accept.connection = sessionId;
             accept.ip = ip;
@@ -181,27 +178,51 @@ namespace TeddyServer.Framework {
 
                 switch (socketMessage.Type) {
                     case SocketMessageType.Connect: {
-                        ConnectMessage conn = socketMessage as ConnectMessage;
-                        TCPClient tcpClient = (TCPClient)m_tcpObjectContainer.Get(conn.TcpObjectId);
-                        tcpClient.Connect(conn.IP, conn.Port);
+                        if (socketMessage is ConnectMessage conn) {
+                            TCPClient tcpObject = (TCPClient)m_tcpObjectContainer.Get(conn.TcpObjectId);
+                            if (tcpObject == null) {
+                                LoggerHelper.Info(0, $"TcpObject is null, TcpObjectId:{conn.TcpObjectId}");
+                                break;
+                            }
+
+                            tcpObject.Connect(conn.IP, conn.Port);
+                        } else {
+                            LoggerHelper.Info(0, $"socketMessage 转 ConnectMessage 失败！");
+                        }
                     }
                         break;
                     case SocketMessageType.Disconnect: {
-                        DisconnectMessage conn = socketMessage as DisconnectMessage;
-                        TCPObject tcpObject = m_tcpObjectContainer.Get(conn.TcpObjectId);
-                        tcpObject.Disconnect(conn.ConnectionId);
+                        if (socketMessage is DisconnectMessage conn) {
+                            TCPObject tcpObject = m_tcpObjectContainer.Get(conn.TcpObjectId);
+                            if (tcpObject == null) {
+                                LoggerHelper.Info(0, $"TcpObject is null, TcpObjectId:{conn.TcpObjectId}");
+                                break;
+                            }
+
+                            tcpObject.Disconnect(conn.ConnectionId);
+                        } else {
+                            LoggerHelper.Info(0, $"socketMessage 转 DisconnectMessage 失败！");
+                        }
                     }
                         break;
                     case SocketMessageType.DATA: {
-                        NetworkPacket netpack = socketMessage as NetworkPacket;
-                        TCPObject tcpObject = m_tcpObjectContainer.Get(netpack.TcpObjectId);
-                        Session session = tcpObject.GetSessionBy(netpack.ConnectionId);
-                        if (session != null) {
-                            for (int i = 0; i < netpack.Buffers.Count; i++) {
-                                session.Write(netpack.Buffers[i]);
+                        if (socketMessage is NetworkPacket netpack) {
+                            TCPObject tcpObject = m_tcpObjectContainer.Get(netpack.TcpObjectId);
+                            if (tcpObject == null) {
+                                LoggerHelper.Info(0, $"TcpObject is null, TcpObjectId:{netpack.TcpObjectId}");
+                                break;
+                            }
+
+                            Session session = tcpObject.GetSessionBy(netpack.ConnectionId);
+                            if (session != null) {
+                                for (int i = 0; i < netpack.Buffers.Count; i++) {
+                                    session.Write(netpack.Buffers[i]);
+                                }
+                            } else {
+                                LoggerHelper.Info(0, string.Format("Opaque:{0} ConnectionId:{1} ErrorText:{2}", tcpObject.GetOpaque(), netpack.ConnectionId, "Connection disconnected"));
                             }
                         } else {
-                            LoggerHelper.Info(0, string.Format("Opaque:{0} ConnectionId:{1} ErrorText:{2}", tcpObject.GetOpaque(), netpack.ConnectionId, "Connection disconnected"));
+                            LoggerHelper.Info(0, $"socketMessage 转 NetworkPacket 失败！");
                         }
                     }
                         break;

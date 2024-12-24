@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Linq;
+using TeddyServer.Framework.Utility;
 using TeddyServer.Test;
 
 namespace TeddyServer {
     class Program {
         public static int Main(string[] args)
         {
+            if (args.Length < 1) {
+                LoggerHelper.Info(0, "没有传入参数！无事发生！");
+                return 0;
+            }
+
             string inputMode = args[0];
             int mode = 0;
             if (inputMode == "TestCases") {

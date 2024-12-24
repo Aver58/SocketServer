@@ -7,20 +7,12 @@ namespace TeddyServer.Framework.Service {
         private Dictionary<string, Method> m_socketMethods = new Dictionary<string, Method>();
         private int m_tcpObjectId = 0;
 
-        protected override void Init(byte[] param) {
+        protected override void Init() {
             base.Init();
 
             RegisterSocketMethods("SocketAccept", SocketAccept);
             RegisterSocketMethods("SocketData", SocketData);
             RegisterSocketMethods("SocketError", SocketError);
-        }
-
-        private void SetTCPObjectId(int tcpObjectId) {
-            m_tcpObjectId = tcpObjectId;
-        }
-
-        protected int GetTcpObjectId() {
-            return m_tcpObjectId;
         }
 
         protected override void OnSocketCommand(Message msg) {

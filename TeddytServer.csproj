@@ -95,8 +95,15 @@
     <Compile Include="Framework\Utility\SocketExtensions.cs" />
     <Compile Include="Framework\Utility\SparkServerUtility.cs" />
     <Compile Include="Framework\Utility\Timer.cs" />
+    <Compile Include="Game\Process\Battle\BattleTaskConsumer.cs" />
+    <Compile Include="Game\Process\Battle\BattleTaskDispatcher.cs" />
+    <Compile Include="Game\Process\TestSender\Boot.cs" />
+    <Compile Include="Game\Process\TestSender\Sender.cs" />
+    <Compile Include="Game\Resource\RPCProtoCS\BattleTaskConsumer.cs" />
+    <Compile Include="Game\Resource\RPCProtoCS\BattleTaskDispatcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proto\ProtoCS\ClusterClient.cs" />
     <Compile Include="Proto\ProtoCS\Common.cs" />
     <Compile Include="Proto\ProtoCS\Logger.cs" />
     <Compile Include="Proto\ProtoCS\NetProtocol.cs" />
@@ -139,9 +146,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Framework\Service\Logger\" />
-    <Folder Include="Game\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Game\Resource\RPCProtoSchema\BattleTaskConsumer.sproto" />
+    <Content Include="Game\Resource\RPCProtoSchema\BattleTaskDispatcher.sproto" />
+    <Content Include="Game\Resource\sproto2cs.bat" />
+    <Content Include="Game\Startconf\LocalSvr\Battle\BootConfig.json" />
+    <Content Include="Game\Startconf\LocalSvr\ClusterName.json" />
+    <Content Include="Game\Startconf\LocalSvr\TestSender\BootConfig.json" />
+    <Content Include="Game\WinCmd\BootBattle.bat" />
+    <Content Include="Game\WinCmd\BootTestSender.bat" />
+    <Content Include="Proto\ProtoFile\ClusterClient.sproto" />
     <Content Include="Proto\ProtoFile\Common.sproto" />
     <Content Include="Proto\ProtoFile\Logger.sproto" />
     <Content Include="sproto\.gitmodules" />

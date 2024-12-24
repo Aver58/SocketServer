@@ -29,7 +29,7 @@ namespace TeddyServer.Test {
 
         private void GatewayCase() {
             BootServices boot = delegate() { };
-            Framework.Server server = new Framework.Server();
+            Server server = new Server();
             server.Run("../../Test/Gateway/Resource/Config/Startup.json", boot);
         }
 

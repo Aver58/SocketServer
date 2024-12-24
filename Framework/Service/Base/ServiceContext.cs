@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using NetSprotoType;
-using Newtonsoft.Json.Linq;
 using TeddyServer.Framework.MessageQueue;
 using TeddyServer.Framework.Utility;
 
@@ -168,6 +167,16 @@ namespace TeddyServer.Framework.Service.Base {
         protected void Call(string destination, string method, byte[] param, SSContext context, RPCCallback cb) {
             int serviceId = ServiceSlots.Instance.Name2Id(destination);
             Call(serviceId, method, param, context, cb);
+        }
+
+        protected void RemoteCall(string remoteNode, string service, string method, byte[] param, SSContext context, RPCCallback cb) {
+            ClusterClientRequest request = new ClusterClientRequest();
+            request.remoteNode = remoteNode;
+            request.remoteService = service;
+            request.method = method;
+            request.param = Convert.ToBase64String(param);
+
+            Call("clusterClient", "Request", request.encode(), context, cb);
         }
 
         protected void DoResponse(int destination, string method, byte[] param, int session) {
