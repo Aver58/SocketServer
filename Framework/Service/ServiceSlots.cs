@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using TeddyServer.Framework.Service.Base;
+using TeddyServer.Framework.Utility;
 
-namespace Server.Framework.Service {
+namespace TeddyServer.Framework.Service {
     class ServiceSlots : Singleton<ServiceSlots> {
         private static ReaderWriterLock rwlock = new ReaderWriterLock();
 
@@ -67,6 +69,7 @@ namespace Server.Framework.Service {
                     rwlock.ReleaseWriterLock();
                 }
             } catch (ApplicationException e) {
+                LoggerHelper.Info(0, e.Message);
             }
 
             return result;
@@ -87,6 +90,7 @@ namespace Server.Framework.Service {
                     rwlock.ReleaseReaderLock();
                 }
             } catch (ApplicationException e) {
+                LoggerHelper.Info(0, e.Message);
             }
 
             return s;

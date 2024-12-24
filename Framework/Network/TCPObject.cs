@@ -1,4 +1,4 @@
-namespace Server.Framework.Network {
+namespace TeddyServer.Framework.Network {
     public class TCPObject {
         protected int m_objectId = 0;
         protected int m_opaque = 0; // service address

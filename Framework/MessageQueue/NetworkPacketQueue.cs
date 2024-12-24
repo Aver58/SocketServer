@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace Server.Framework.MessageQueue {
-    class NetworkPacketQueue : Singleton<NetworkPacket> {
+namespace TeddyServer.Framework.MessageQueue {
+    class NetworkPacketQueue : Singleton<NetworkPacketQueue> {
         private ConcurrentQueue<SocketMessage> m_netpackQueue = new ConcurrentQueue<SocketMessage>();
 
         public void Push(SocketMessage socketMessage) {

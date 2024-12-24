@@ -1,4 +1,4 @@
-namespace Server.Framework {
+namespace TeddyServer.Framework {
     public class DatabaseServer {
         
     }

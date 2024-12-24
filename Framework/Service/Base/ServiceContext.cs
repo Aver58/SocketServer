@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using NetSprotoType;
-using Server.Framework.MessageQueue;
-using Server.Framework.Utility;
+using Newtonsoft.Json.Linq;
+using TeddyServer.Framework.MessageQueue;
+using TeddyServer.Framework.Utility;
 
-namespace Server.Framework.Service {
+namespace TeddyServer.Framework.Service.Base {
     class ServiceContext {
         private Queue<Message> m_messageQueue = new Queue<Message>();
         private SpinLock m_spinlock = new SpinLock();
@@ -15,7 +16,6 @@ namespace Server.Framework.Service {
         protected int m_loggerId = 0;
         protected int m_serviceAddress = 0;
         protected int m_totalServiceSession = 0;
-
         private Dictionary<string, Method> m_serviceMethods = new Dictionary<string, Method>();
         private Dictionary<int, RPCResponseContext> m_responseCallbacks = new Dictionary<int, RPCResponseContext>();
         private Dictionary<int, TimeoutContext> m_timeoutCallbacks = new Dictionary<int, TimeoutContext>();

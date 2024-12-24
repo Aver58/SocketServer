@@ -1,8 +1,7 @@
 using System;
-using System.Net.Sockets;
-using Server.Framework.Network;
+using TeddyServer.Framework.Network;
 
-namespace Server.Test {
+namespace TeddyServer.Test {
     public class TestServer {
         private TCPServer server;
         public void InitTCPServer() {

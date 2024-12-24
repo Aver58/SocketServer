@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Server.Framework.Network {
+namespace TeddyServer.Framework.Network {
     /// <summary>
     /// 数据包发送管理器
     /// 处理发送的数据包，在应用层的数据包发完以后，会从buffer队列中取出下一个buffer，让socket发送

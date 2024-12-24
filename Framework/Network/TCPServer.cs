@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Server.Framework.Network {
+namespace TeddyServer.Framework.Network {
     public delegate void TCPObjectErrorHandle(int opaque, long sessionId, string remoteEndPoint, int errorCode, string errorText);
 
     public delegate void SessionErrorHandle(int opaque, long sessionId, int errorCode, string errorText);
@@ -83,13 +83,11 @@ namespace Server.Framework.Network {
 
         private void OnSessionError(int opaque, long sessionId, int errorCode, string errorText) {
             string ipEndPoint = "";
-
             Session session = null;
             m_sessionDict.TryGetValue(sessionId, out session);
             if (session != null) {
                 IPEndPoint ipEP = session.GetRemoteEndPoint();
                 ipEndPoint = ipEP.ToString();
-
                 m_onErrorHandle(opaque, sessionId, ipEndPoint, errorCode, errorText);
                 if (errorCode == (int)SessionSocketError.Disconnected) {
                     m_sessionDict.Remove(sessionId);

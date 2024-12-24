@@ -3,14 +3,10 @@
 // desc:  TCP session
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Server.Framework.Network {
+namespace TeddyServer.Framework.Network {
     // 具体负责连接管理，数据包收发处理，错误接收并抛给业务层的类，我们会为每个连接创建一个Session实例
     public class Session {
         public static int MaxPacketSize = 64 * 1024; // max packet size is 64k

@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
 using System.Text;
-using Server.Framework.Network;
+using TeddyServer.Framework.Network;
 
-namespace Server.Test {
+namespace TeddyServer.Test {
     public class TestClient {
         private UserData m_userData;
-        private bool m_isConnected;
         private int m_receiveCount = 0;
         private int m_hashCode = 0;
 
@@ -40,7 +39,6 @@ namespace Server.Test {
                 m_userData.SessionId = sessionId;
                 m_userData.IP = ip;
                 m_userData.Port = port;
-                m_isConnected = true;
                 Console.WriteLine("new session:{0} connected, ip:{1}, port:{2}", sessionId, ip, port);
             }
         }
@@ -58,7 +56,6 @@ namespace Server.Test {
         }
 
         private void OnSessionError(int opaque, long sessionId, string remoteendpoint, int errorCode, string errorText) {
-            m_isConnected = false;
             Console.WriteLine("OnSessionError sessionId:{0} errorCode:{1} errorText:{2}", sessionId, errorCode, errorText);
         }
 

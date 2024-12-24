@@ -1,10 +1,9 @@
-using System.ServiceModel.Channels;
-using System.Text;
+using System;
 
-namespace Server.Framework.Utility {
+namespace TeddyServer.Framework.Utility {
     public class LoggerHelper {
         public static void Info(int source, string msg) {
-            string logger = "logger";
+            // string logger = "logger";
             // LoggerService loggerService = (LoggerService)ServiceSlots.GetInstance().Get(logger);
             //
             // Message message = new Message();
@@ -14,6 +13,7 @@ namespace Server.Framework.Utility {
             // message.Source = source;
             // message.Type = MessageType.ServiceRequest;
             // loggerService.Push(message);
+            Console.WriteLine($"source {source} msg {msg}");
         }
     }
 }

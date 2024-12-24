@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Server.Framework.Network {
+namespace TeddyServer.Framework.Network {
     public class Buffer {
         // buffer's size is 4k
         public const int Size = 4096;

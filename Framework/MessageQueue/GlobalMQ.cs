@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace Server.Framework.MessageQueue {
+namespace TeddyServer.Framework.MessageQueue {
     public class GlobalMQ : Singleton<GlobalMQ> {
         private ConcurrentQueue<int> m_serviceQueue = new ConcurrentQueue<int>();
 

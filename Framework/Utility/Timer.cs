@@ -1,4 +1,4 @@
-namespace Server.Framework.Util {
+namespace TeddyServer.Framework.Utility {
     public class Timer {
         
     }

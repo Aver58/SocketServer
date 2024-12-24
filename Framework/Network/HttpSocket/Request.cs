@@ -161,7 +161,7 @@ public class Request
         nextIdx = 0;
         bool ret = false;
 
-        byte c = 0, c2 = 0;
+        byte c2 = 0;
         for (int i = 0; i < len/* - 1*/; i++)
         {
             //c = data[i];

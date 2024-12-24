@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace Server.Framework.Network {
+namespace TeddyServer.Framework.Network {
     /// <summary>
     /// 数据包接收管理器
     /// 处理接收到的数据包，在应用层的数据包收齐后，会通过回调函数通知业务层

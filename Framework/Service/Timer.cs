@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Concurrent;
+using TeddyServer.Framework.Service.Base;
 
-namespace Server.Framework.Service {
+namespace TeddyServer.Framework.Service {
     class SSTimer : Singleton<SSTimer> {
         private ConcurrentQueue<SSTimerNode> m_timerNodeQueue = new ConcurrentQueue<SSTimerNode>();
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace Server.Framework.Network {
+namespace TeddyServer.Framework.Network {
     // 我们的IO响应函数，首先会在socket线程内调用，
     // 这个类是个单例，内部有个函数对象（Action实例）的加锁队列，IO响应函数会将想调用的函数包装成函数对象，
     // 并且插入这个队列中，运行在主线程的TCPServer或TCPClient实例会不断从这个加锁队列中，pop出函数队列，并且执行，

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{CA00A7E9-E14E-4D30-BFB5-B61255D51D8A}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Server</RootNamespace>
-    <AssemblyName>Server</AssemblyName>
+    <RootNamespace>TeddyServer</RootNamespace>
+    <AssemblyName>TeddyServer</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="protobuf-net, Version=2.4.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>packages\protobuf-net.2.4.4\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
@@ -77,16 +80,20 @@
     <Compile Include="Framework\Network\Session.cs" />
     <Compile Include="Framework\Network\TCPClient.cs" />
     <Compile Include="Framework\Network\TCPObject.cs" />
+    <Compile Include="Framework\Network\TCPObjectContainer.cs" />
     <Compile Include="Framework\Network\TCPServer.cs" />
     <Compile Include="Framework\Network\TCPServer\TcpServerDemo.cs" />
     <Compile Include="Framework\Network\TCPSynchronizeContext.cs" />
     <Compile Include="Framework\Server.cs" />
     <Compile Include="Framework\Service\Base\ServiceContext.cs" />
+    <Compile Include="Framework\Service\Gateway.cs" />
     <Compile Include="Framework\Service\ServiceSlots.cs" />
     <Compile Include="Framework\Service\Timer.cs" />
+    <Compile Include="Framework\Utility\ConfigHelper.cs" />
     <Compile Include="Framework\Utility\LoggerHelper.cs" />
     <Compile Include="Framework\Utility\Singleton.cs" />
     <Compile Include="Framework\Utility\SocketExtensions.cs" />
+    <Compile Include="Framework\Utility\SparkServerUtility.cs" />
     <Compile Include="Framework\Utility\Timer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -120,6 +127,9 @@
     <Compile Include="sproto\testCase\TestCaseSprotoTypeFieldOP.cs" />
     <Compile Include="sproto\testCase\TestCaseSprotoTypeSerialize.cs" />
     <Compile Include="sproto\testCase\TestCaseTestAll.cs" />
+    <Compile Include="Test\Gateway\GatewayCase.cs" />
+    <Compile Include="Test\Gateway\GatewayClientCase.cs" />
+    <Compile Include="Test\TestCases.cs" />
     <Compile Include="Test\TestClient.cs" />
     <Compile Include="Test\TestServer.cs" />
   </ItemGroup>
@@ -141,6 +151,9 @@
     <Content Include="sproto\gen_example\TestMap.sproto" />
     <Content Include="sproto\gen_example\TestRpc.sproto" />
     <Content Include="sproto\README.md" />
+    <Content Include="Test\Gateway\Resource\Config\Startup.json" />
+    <Content Include="Test\Gateway\WinCmd\BootClient.bat" />
+    <Content Include="Test\Gateway\WinCmd\BootServer.bat" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
