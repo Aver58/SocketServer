@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using NetSprotoType;
+using Newtonsoft.Json.Linq;
 using TeddyServer.Framework.MessageQueue;
 using TeddyServer.Framework.Utility;
 
 namespace TeddyServer.Framework.Service.Base {
+    /// <summary>
+    /// ServiceBase
+    /// </summary>
     class ServiceContext {
         private Queue<Message> m_messageQueue = new Queue<Message>();
         private SpinLock m_spinlock = new SpinLock();
@@ -19,15 +23,15 @@ namespace TeddyServer.Framework.Service.Base {
         private Dictionary<int, RPCResponseContext> m_responseCallbacks = new Dictionary<int, RPCResponseContext>();
         private Dictionary<int, TimeoutContext> m_timeoutCallbacks = new Dictionary<int, TimeoutContext>();
 
-        // private JObject m_bootConfig;
+        private JObject m_bootConfig;
 
         public ServiceContext() {
             RegisterServiceMethods("Init", OnInit);
         }
 
         protected void OnInit(int source, int session, string method, byte[] param) {
-            // string bootConfigText = ConfigHelper.LoadFromFile(SparkServerUtility.GetBootConf());
-            // m_bootConfig = JObject.Parse(bootConfigText);
+            string bootConfigText = ConfigHelper.LoadFromFile(SparkServerUtility.GetBootConf());
+            m_bootConfig = JObject.Parse(bootConfigText);
 
             if (param != null)
                 Init(param);
@@ -82,7 +86,7 @@ namespace TeddyServer.Framework.Service.Base {
             if (isExist) {
                 method(msg.Source, msg.RPCSession, msg.Method, msg.Data);
             } else {
-                string text = string.Format("Service:{0} has not method {1}", m_serviceAddress, msg.Method);
+                string text = $"Service:{m_serviceAddress} has not method {msg.Method}";
                 LoggerHelper.Info(m_serviceAddress, text);
                 DoError(msg.Source, msg.RPCSession, RPCError.MethodNotExist, text);
             }
@@ -95,7 +99,7 @@ namespace TeddyServer.Framework.Service.Base {
                 responseCallback.Callback(responseCallback.Context, msg.Method, msg.Data, RPCError.OK);
                 m_responseCallbacks.Remove(msg.RPCSession);
             } else {
-                LoggerHelper.Info(m_serviceAddress, string.Format("Service:{0} session:{1} has not response", m_serviceAddress, msg.RPCSession));
+                LoggerHelper.Info(m_serviceAddress, $"Service:{m_serviceAddress} session:{msg.RPCSession} has not response");
             }
         }
 
@@ -110,7 +114,7 @@ namespace TeddyServer.Framework.Service.Base {
                 responseCallback.Callback(responseCallback.Context, msg.Method, Encoding.ASCII.GetBytes(sprotoError.errorText), (RPCError)sprotoError.errorCode);
                 m_responseCallbacks.Remove(msg.RPCSession);
             } else {
-                LoggerHelper.Info(m_serviceAddress, string.Format("Service:{0} session:{1} get error:{2}; error text is {3}", m_serviceAddress, msg.RPCSession, sprotoError.errorCode, sprotoError.errorText));
+                LoggerHelper.Info(m_serviceAddress, $"Service:{m_serviceAddress} session:{msg.RPCSession} get error:{sprotoError.errorCode}; error text is {sprotoError.errorText}");
             }
         }
 

@@ -58,6 +58,7 @@
     <Compile Include="Framework\LogicServer.cs" />
     <Compile Include="Framework\MessageQueue\GlobalMQ.cs" />
     <Compile Include="Framework\MessageQueue\NetworkPacketQueue.cs" />
+    <Compile Include="Framework\MessageQueue\SkynetPacketManager.cs" />
     <Compile Include="Framework\Network\BufferPool.cs" />
     <Compile Include="Framework\Network\HttpSocket\HttpServer.cs" />
     <Compile Include="Framework\Network\HttpSocket\IServerScript.cs" />
@@ -86,15 +87,16 @@
     <Compile Include="Framework\Network\TCPSynchronizeContext.cs" />
     <Compile Include="Framework\Server.cs" />
     <Compile Include="Framework\Service\Base\ServiceContext.cs" />
+    <Compile Include="Framework\Service\ClusterClient.cs" />
+    <Compile Include="Framework\Service\ClusterServer.cs" />
     <Compile Include="Framework\Service\Gateway.cs" />
     <Compile Include="Framework\Service\ServiceSlots.cs" />
-    <Compile Include="Framework\Service\Timer.cs" />
+    <Compile Include="Framework\Service\SSTimer.cs" />
     <Compile Include="Framework\Utility\ConfigHelper.cs" />
     <Compile Include="Framework\Utility\LoggerHelper.cs" />
     <Compile Include="Framework\Utility\Singleton.cs" />
     <Compile Include="Framework\Utility\SocketExtensions.cs" />
     <Compile Include="Framework\Utility\SparkServerUtility.cs" />
-    <Compile Include="Framework\Utility\Timer.cs" />
     <Compile Include="Game\Process\Battle\BattleTaskConsumer.cs" />
     <Compile Include="Game\Process\Battle\BattleTaskDispatcher.cs" />
     <Compile Include="Game\Process\TestSender\Boot.cs" />
@@ -104,6 +106,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proto\ProtoCS\ClusterClient.cs" />
+    <Compile Include="Proto\ProtoCS\ClusterServer.cs" />
     <Compile Include="Proto\ProtoCS\Common.cs" />
     <Compile Include="Proto\ProtoCS\Logger.cs" />
     <Compile Include="Proto\ProtoCS\NetProtocol.cs" />
@@ -137,15 +140,10 @@
     <Compile Include="Test\Gateway\GatewayCase.cs" />
     <Compile Include="Test\Gateway\GatewayClientCase.cs" />
     <Compile Include="Test\TestCases.cs" />
-    <Compile Include="Test\TestClient.cs" />
-    <Compile Include="Test\TestServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Framework\Service\Logger\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game\Resource\RPCProtoSchema\BattleTaskConsumer.sproto" />
@@ -157,6 +155,7 @@
     <Content Include="Game\WinCmd\BootBattle.bat" />
     <Content Include="Game\WinCmd\BootTestSender.bat" />
     <Content Include="Proto\ProtoFile\ClusterClient.sproto" />
+    <Content Include="Proto\ProtoFile\ClusterServer.sproto" />
     <Content Include="Proto\ProtoFile\Common.sproto" />
     <Content Include="Proto\ProtoFile\Logger.sproto" />
     <Content Include="sproto\.gitmodules" />

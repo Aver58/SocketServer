@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Threading;
 using NetSprotoType;
 using Newtonsoft.Json.Linq;
@@ -9,7 +10,10 @@ using TeddyServer.Framework.Service.Base;
 using TeddyServer.Framework.Utility;
 
 namespace TeddyServer.Framework {
-    public delegate void BootServices();
+    /// <summary>
+    /// 流程见：Picture/thread_model.png
+    ///
+    /// </summary>
     public class Server {
         private string m_gateIp;
         private int m_gatePort = 0;
@@ -21,6 +25,10 @@ namespace TeddyServer.Framework {
         private NetworkPacketQueue m_netpackQueue;
         private SSTimer m_timer;
         private TCPObjectContainer m_tcpObjectContainer;
+        private string m_clusterServerIp;
+        private int m_clusterServerPort = 0;
+        private TCPServer m_clusterTCPServer;
+        private TCPClient m_clusterTCPClient;
 
         public void Run(string bootConf, BootServices customBoot) {
             InitConfig(bootConf);
@@ -31,6 +39,20 @@ namespace TeddyServer.Framework {
         private void InitConfig(string bootConf) {
             string bootConfigText = ConfigHelper.LoadFromFile(bootConf);
             m_bootConfig = JObject.Parse(bootConfigText);
+
+            if (m_bootConfig.ContainsKey("ClusterConfig"))
+            {
+                string clusterNamePath = m_bootConfig["ClusterConfig"].ToString();
+                string clusterNameText = ConfigHelper.LoadFromFile(clusterNamePath);
+                JObject clusterConfig = JObject.Parse(clusterNameText);
+
+                string clusterName = m_bootConfig["ClusterName"].ToString();
+                string ipEndpoint = clusterConfig[clusterName].ToString();
+
+                string[] ipResult = ipEndpoint.Split(':');
+                m_clusterServerIp = ipResult[0];
+                m_clusterServerPort = Int32.Parse(ipResult[1]);
+            }
 
             if (m_bootConfig.TryGetValue("Gateway", out var gatewayJson)) {
                 m_gateIp = gatewayJson["Host"].ToString();
@@ -52,6 +74,10 @@ namespace TeddyServer.Framework {
             NetProtocol.GetInstance();
             m_tcpObjectContainer = new TCPObjectContainer();
 
+            if (m_bootConfig.ContainsKey("ClusterConfig")) {
+                InitCluster();
+            }
+
             if (m_bootConfig.ContainsKey("Gateway")) {
                 InitGateway();
             }
@@ -69,6 +95,30 @@ namespace TeddyServer.Framework {
             timerThread.Start();
         }
 
+        private void InitCluster() {
+            m_clusterTCPServer = new TCPServer();
+            m_tcpObjectContainer.Add(m_clusterTCPServer);
+
+            m_clusterTCPClient = new TCPClient();
+            m_tcpObjectContainer.Add(m_clusterTCPClient);
+
+            ClusterServer_Init clusterServerInit = new ClusterServer_Init();
+            clusterServerInit.tcp_server_id = m_clusterTCPServer.GetObjectId();
+            int clusterServerId = SparkServerUtility.NewService("TeddyServer.Framework.Service.ClusterServer",
+                "clusterServer",
+                clusterServerInit.encode());
+
+            ClusterClient_Init clusterClientInit = new ClusterClient_Init();
+            clusterClientInit.tcp_client_id = m_clusterTCPClient.GetObjectId();
+            clusterClientInit.cluster_config = m_bootConfig["ClusterConfig"].ToString();
+            int clusterClientId = SparkServerUtility.NewService("TeddyServer.Framework.Service.ClusterClient",
+                "clusterClient",
+                clusterClientInit.encode());
+
+            m_clusterTCPServer.Start(m_clusterServerIp, m_clusterServerPort, 30, clusterServerId, OnSessionError, OnReadPacketComplete, OnAcceptComplete);
+            m_clusterTCPClient.Start(clusterClientId, OnSessionError, OnReadPacketComplete, OnConnectedComplete);
+        }
+
         private void InitGateway() {
             string gatewayClass = m_bootConfig["Gateway"]["Class"].ToString();
             string gatewayName = m_bootConfig["Gateway"]["Name"].ToString();
@@ -80,8 +130,15 @@ namespace TeddyServer.Framework {
         }
 
         private void Loop() {
+            bool isInitCluster = m_bootConfig.ContainsKey("ClusterConfig");
+            bool isInitGateway = m_bootConfig.ContainsKey("Gateway");
             while (true) {
-                if (m_tcpGate != null) {
+                if (isInitCluster) {
+                    m_clusterTCPServer.Loop();
+                    m_clusterTCPClient.Loop();
+                }
+
+                if (isInitGateway) {
                     m_tcpGate.Loop();
                 }
 
@@ -138,6 +195,7 @@ namespace TeddyServer.Framework {
             SocketData data = new SocketData();
             data.connection = sessionId;
             data.buffer = Convert.ToBase64String(buffer);
+            LoggerHelper.Info(0, $"OnReadPacketComplete :GetString {Encoding.ASCII.GetString(buffer, 0, packetSize)} ToBase64String {data.buffer}");
 
             Message msg = new Message();
             msg.Source = 0;
@@ -163,6 +221,24 @@ namespace TeddyServer.Framework {
             msg.Destination = opaque;
             msg.Method = "SocketAccept";
             msg.Data = accept.encode();
+            msg.RPCSession = 0;
+            msg.Type = MessageType.Socket;
+
+            ServiceContext service = ServiceSlots.Instance.Get(opaque);
+            service.Push(msg);
+        }
+
+        private void OnConnectedComplete(int opaque, long sessionId, string ip, int port) {
+            ClusterClientSocketConnected connected = new ClusterClientSocketConnected();
+            connected.connection = sessionId;
+            connected.ip = ip;
+            connected.port = port;
+
+            Message msg = new Message();
+            msg.Source = 0;
+            msg.Destination = opaque;
+            msg.Method = "SocketConnected";
+            msg.Data = connected.encode();
             msg.RPCSession = 0;
             msg.Type = MessageType.Socket;
 
@@ -219,7 +295,7 @@ namespace TeddyServer.Framework {
                                     session.Write(netpack.Buffers[i]);
                                 }
                             } else {
-                                LoggerHelper.Info(0, string.Format("Opaque:{0} ConnectionId:{1} ErrorText:{2}", tcpObject.GetOpaque(), netpack.ConnectionId, "Connection disconnected"));
+                                LoggerHelper.Info(0, $"Opaque:{tcpObject.GetOpaque()} ConnectionId:{netpack.ConnectionId} ErrorText:Connection disconnected ");
                             }
                         } else {
                             LoggerHelper.Info(0, $"socketMessage 转 NetworkPacket 失败！");
@@ -232,4 +308,6 @@ namespace TeddyServer.Framework {
             }
         }
     }
+
+    public delegate void BootServices();
 }

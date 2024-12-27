@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using TeddyServer.Framework.Utility;
 
 namespace TeddyServer.Framework.Network {
     public delegate void ConnectCompleteHandle(int opaque, long sessionId, string ip, int port);
@@ -26,7 +27,6 @@ namespace TeddyServer.Framework.Network {
             m_onErrorHandle = errorCallback;
             m_onReadCompleteHandle = readCallback;
             m_onConnectCompleteHandle = connectCallback;
-
             m_opaque = opaque;
         }
 
@@ -47,6 +47,7 @@ namespace TeddyServer.Framework.Network {
             Session session = new Session();
             session.StartAsClient(socket, m_opaque, m_totalSessionId, m_bufferPool, ipEndPoint, OnSessionError, m_onReadCompleteHandle, m_onConnectCompleteHandle, userToken);
             m_sessionDict.Add(m_totalSessionId, session);
+            LoggerHelper.Info(0, $"TCPClient Connect to {serverIP}:{port}");
         }
 
         public override void Disconnect(long sessionId) {

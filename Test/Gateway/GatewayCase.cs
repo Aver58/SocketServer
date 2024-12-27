@@ -19,10 +19,11 @@ namespace TeddyServer.Test.Gateway {
             LoggerHelper.Info(m_serviceAddress, $"SocketError session:{session},method:{method},param:{Encoding.ASCII.GetString(param, 0, param.Length)}");
         }
 
+        // 收到客户端消息
         protected override void SocketData(int source, int session, string method, byte[] param) {
             NetSprotoType.SocketData data = new NetSprotoType.SocketData(param);
 
-            LoggerHelper.Info(m_serviceAddress, $"SocketData session:{session},method:{method},param:{Encoding.ASCII.GetString(param, 0, param.Length)} {data.connection},{Encoding.ASCII.GetString(param, 0, param.Length)}");
+            LoggerHelper.Info(m_serviceAddress, $"SocketData session:{session},method:{method},param:{Encoding.ASCII.GetString(param, 0, param.Length)} connection {data.connection}");
 
             NetworkPacket message = new NetworkPacket();
             message.Type = SocketMessageType.DATA;

@@ -49,7 +49,7 @@ namespace TeddyServer.Framework.Utility {
                 ServiceSlots.Instance.Name(service.GetId(), serviceName);
             }
 
-            LoggerHelper.Info(service.GetId(), string.Format("{0} launched", serviceName));
+            LoggerHelper.Info(service.GetId(), $"{serviceName} launched");
 
             return service.GetId();
         }

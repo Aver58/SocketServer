@@ -3,4 +3,4 @@
 @REM desc:launch testsender process
 
 cd ../../bin/Debug/
-spark-server.exe SparkServer SparkServer.Game.Process.TestSender.Boot ../../Game/Startconf/LocalSvr/TestSender/BootConfig.json
+TeddyServer.exe SparkServer SparkServer.Game.Process.TestSender.Boot ../../Game/Startconf/LocalSvr/TestSender/BootConfig.json

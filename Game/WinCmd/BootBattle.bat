@@ -3,4 +3,4 @@
 @REM desc:launch battle process
 
 cd ../../bin/Debug/
-spark-server.exe SparkServer SparkServer.Game.Process.Battle.BattleTaskDispatcher ../../Game/Startconf/LocalSvr/Battle/BootConfig.json BattleTaskDispatcher 
+TeddyServer.exe SparkServer SparkServer.Game.Process.Battle.BattleTaskDispatcher ../../Game/Startconf/LocalSvr/Battle/BootConfig.json BattleTaskDispatcher

@@ -5,6 +5,9 @@ using TeddyServer.Framework.Service.Base;
 using TeddyServer.Framework.Utility;
 
 namespace TeddyServer.Framework.Service {
+    /// <summary>
+    /// ServiceManager
+    /// </summary>
     class ServiceSlots : Singleton<ServiceSlots> {
         private static ReaderWriterLock rwlock = new ReaderWriterLock();
 

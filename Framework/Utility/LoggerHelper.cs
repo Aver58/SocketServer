@@ -13,7 +13,8 @@ namespace TeddyServer.Framework.Utility {
             // message.Source = source;
             // message.Type = MessageType.ServiceRequest;
             // loggerService.Push(message);
-            Console.WriteLine($"source {source} msg {msg}");
+
+            Console.WriteLine(source == 0? $"msg {msg}" : $"source {source} msg {msg}");
         }
     }
 }

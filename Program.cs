@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
+using TeddyServer.Framework;
 using TeddyServer.Framework.Utility;
 using TeddyServer.Test;
 
 namespace TeddyServer {
     class Program {
-        public static int Main(string[] args)
-        {
+        public static int Main(string[] args) {
             if (args.Length < 1) {
                 LoggerHelper.Info(0, "没有传入参数！无事发生！");
                 return 0;
@@ -26,26 +26,24 @@ namespace TeddyServer {
             switch (mode) {
                 case 1: {
                     string caseName = args[1];
-
                     TestCases testCases = new TestCases();
                     testCases.Run(caseName);
                 }
                     break;
                 case 2: {
-                    // string bootService = args[1];
-                    // string bootPath = args[2];
-                    // string bootServiceName = "";
-                    //
-                    // if (args.Length >= 4) {
-                    //     bootServiceName = args[3];
-                    // }
-                    //
-                    // BootServices startFunc = delegate() {
-                    //     SparkServerUtility.NewService(bootService, bootServiceName);
-                    // };
-                    //
-                    // Server battleServer = new Server();
-                    // battleServer.Run(bootPath, startFunc);
+                    string bootService = args[1];
+                    string bootPath = args[2];
+                    string bootServiceName = "";
+                    if (args.Length >= 4) {
+                        bootServiceName = args[3];
+                    }
+
+                    BootServices startFunc = delegate() {
+                        SparkServerUtility.NewService(bootService, bootServiceName);
+                    };
+
+                    Server battleServer = new Server();
+                    battleServer.Run(bootPath, startFunc);
                 }
                     break;
                 default: {
@@ -58,26 +56,17 @@ namespace TeddyServer {
             return 0;
         }
 
-        public static void InitTCPServer(string[] args)
-        {
+        public static void InitTCPServer(string[] args) {
             TcpServerDemo.Instance.StartTcpServer();
         }
 
-        public static void InitUDPServer(string[] args)
-        {
+        public static void InitUDPServer(string[] args) {
             KcpUDPServer.Instance.StartWithSocket();
         }
 
-        public static int InitHttpServer(string[] args)
-        {
-            if (args.Contains("-h"))
-            {
-                Console.WriteLine("Ussage:\n  " + args[0]
-                                  + "\n\t-h print this message"
-                                  + "\n\t-d specify root directory(default: ./WWW_Root/)"
-                                  + "\n\t-p specify listen port(default: 8090)"
-                                  + "\n\t-l specify listen ip(default: 127.0.0.1)"
-                                  + "\n");
+        public static int InitHttpServer(string[] args) {
+            if (args.Contains("-h")) {
+                Console.WriteLine("Ussage:\n  " + args[0] + "\n\t-h print this message" + "\n\t-d specify root directory(default: ./WWW_Root/)" + "\n\t-p specify listen port(default: 8090)" + "\n\t-l specify listen ip(default: 127.0.0.1)" + "\n");
                 return 0;
             }
 
@@ -91,7 +80,7 @@ namespace TeddyServer {
                 int.TryParse(portstr, out port);
 
             string ip = GetOption(args, "l");
-            ip = string.IsNullOrEmpty(ip) ? "127.0.0.1" : ip;
+            ip = string.IsNullOrEmpty(ip)? "127.0.0.1" : ip;
 
             HttpServer.Instance.StartServer(ip, port);
             return 0;

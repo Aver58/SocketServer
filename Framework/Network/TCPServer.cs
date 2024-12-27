@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using TeddyServer.Framework.Utility;
 
 namespace TeddyServer.Framework.Network {
     public delegate void TCPObjectErrorHandle(int opaque, long sessionId, string remoteEndPoint, int errorCode, string errorText);
@@ -50,7 +51,7 @@ namespace TeddyServer.Framework.Network {
 
             m_bindIP = ip;
             m_bindPort = port;
-
+            LoggerHelper.Info(0, $"TCPServer start at {ip}:{port}");
             BeginAccept();
         }
 
