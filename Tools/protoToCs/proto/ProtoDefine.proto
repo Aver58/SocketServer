@@ -1,9 +1,0 @@
-package protocol;
-
-enum ProtoDefine{
-	Handshake		=0;
-	ReqLogin		=1;
-	ReqRegister		=2;
-	RetLogin		=3;
-	RetRegister		=4;	
-}

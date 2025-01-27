@@ -14,10 +14,12 @@
 using ProtoBuf;
 using System;
 using System.IO;
+using Google.Protobuf;
+using TeddyServer.Framework.Utility;
 
 public class ProtoBufUtil {
     // 序列化  
-    public static byte[] Serialize<T>(T msg) {
+    private static byte[] Serialize<T>(T msg) {
         if (msg == null) {
             throw new ArgumentNullException(nameof(msg), "对象不能为空");
         }
@@ -30,6 +32,7 @@ public class ProtoBufUtil {
 
     // 封包，依次写入协议数据长度、协议id、协议内容
     public static byte[] PackNetMsg(NetMsgData data) {
+        Logger.Log($"[PackNetMsg]ID:{data.ID},Data:{data.Data}");
         ushort protoId = data.ID;
         MemoryStream ms = null;
         using (ms = new MemoryStream()) {
@@ -46,7 +49,7 @@ public class ProtoBufUtil {
     }
 
     // 反序列化
-    static public T Deserialize<T>(byte[] message) {
+    private static T Deserialize<T>(byte[] message) {
         T result = default(T);
         if (message != null) {
             using (var stream = new MemoryStream(message)) {
@@ -59,8 +62,7 @@ public class ProtoBufUtil {
 
     // 解包，依次写出协议数据长度、协议id、协议数据内容
     public static NetMsgData UnpackNetMsg(byte[] msgData) {
-        MemoryStream ms = null;
-        using (ms = new MemoryStream(msgData)) {
+        using (var ms = new MemoryStream(msgData)) {
             BinaryReader reader = new BinaryReader(ms);
             ushort msgLen = reader.ReadUInt16(); // 2字节
             ushort protoId = reader.ReadUInt16(); // 2字节
@@ -71,12 +73,18 @@ public class ProtoBufUtil {
                     ID = protoId,
                     Data = pbdata
                 };
+                Logger.Log($"[UnpackNetMsg] ID:{data.ID},Data:{data.Data}");
                 return data;
             } else {
-                Console.WriteLine($"协议长度错误 {msgData.Length}");
+                Logger.LogError($"协议长度不足4，长度 {msgData.Length}");
             }
         }
 
         return null;
     }
+
+    // public static byte[] PackNetMsg(IMessage data) {
+    //     Logger.Log($"[PackNetMsg]ID:{data.ID},Data:{data.Data}");
+    //
+    // }
 }

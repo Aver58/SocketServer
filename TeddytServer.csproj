@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Google.Protobuf, Version=3.29.2.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Protobuf.3.29.2\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -40,8 +44,21 @@
       <HintPath>packages\protobuf-net.2.4.4\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
@@ -56,17 +73,12 @@
     <Compile Include="Framework\DatabaseServer.cs" />
     <Compile Include="Framework\GatewayServer.cs" />
     <Compile Include="Framework\LogicServer.cs" />
-    <Compile Include="Framework\MessageQueue\GlobalMQ.cs" />
-    <Compile Include="Framework\MessageQueue\NetworkPacketQueue.cs" />
-    <Compile Include="Framework\MessageQueue\SkynetPacketManager.cs" />
-    <Compile Include="Framework\Network\BufferPool.cs" />
     <Compile Include="Framework\Network\HttpSocket\HttpServer.cs" />
     <Compile Include="Framework\Network\HttpSocket\IServerScript.cs" />
     <Compile Include="Framework\Network\HttpSocket\Request.cs" />
     <Compile Include="Framework\Network\HttpSocket\RequestHandler.cs" />
     <Compile Include="Framework\Network\HttpSocket\Response.cs" />
     <Compile Include="Framework\Network\HttpSocket\StateObject.cs" />
-    <Compile Include="Framework\Network\InboundPacketManager.cs" />
     <Compile Include="Framework\Network\KCPServer\KCPPacket.cs" />
     <Compile Include="Framework\Network\KCPServer\KcpUDPServer.cs" />
     <Compile Include="Framework\Network\KCPServer\KCP\ByteBuffer.cs" />
@@ -74,100 +86,28 @@
     <Compile Include="Framework\Network\KCPServer\KCP\UDPSession.cs" />
     <Compile Include="Framework\Network\KCPServer\NetDefine.cs" />
     <Compile Include="Framework\Network\KCPServer\Packet.cs" />
-    <Compile Include="Framework\Network\OutboundPacketManager.cs" />
     <Compile Include="Framework\Network\ProtoBuf\NetMsgData.cs" />
     <Compile Include="Framework\Network\ProtoBuf\OpCode.cs" />
     <Compile Include="Framework\Network\ProtoBuf\ProtoBufUtil.cs" />
-    <Compile Include="Framework\Network\Session.cs" />
-    <Compile Include="Framework\Network\TCPClient.cs" />
-    <Compile Include="Framework\Network\TCPObject.cs" />
-    <Compile Include="Framework\Network\TCPObjectContainer.cs" />
-    <Compile Include="Framework\Network\TCPServer.cs" />
-    <Compile Include="Framework\Network\TCPServer\TcpServerDemo.cs" />
-    <Compile Include="Framework\Network\TCPSynchronizeContext.cs" />
-    <Compile Include="Framework\Server.cs" />
-    <Compile Include="Framework\Service\Base\ServiceContext.cs" />
-    <Compile Include="Framework\Service\ClusterClient.cs" />
-    <Compile Include="Framework\Service\ClusterServer.cs" />
-    <Compile Include="Framework\Service\Gateway.cs" />
-    <Compile Include="Framework\Service\ServiceSlots.cs" />
-    <Compile Include="Framework\Service\SSTimer.cs" />
-    <Compile Include="Framework\Utility\ConfigHelper.cs" />
-    <Compile Include="Framework\Utility\LoggerHelper.cs" />
+    <Compile Include="Framework\Network\TCPServer\TcpServer.cs" />
+    <Compile Include="Framework\Utility\Logger.cs" />
     <Compile Include="Framework\Utility\Singleton.cs" />
     <Compile Include="Framework\Utility\SocketExtensions.cs" />
-    <Compile Include="Framework\Utility\SparkServerUtility.cs" />
-    <Compile Include="Game\Process\Battle\BattleTaskConsumer.cs" />
-    <Compile Include="Game\Process\Battle\BattleTaskDispatcher.cs" />
-    <Compile Include="Game\Process\TestSender\Boot.cs" />
-    <Compile Include="Game\Process\TestSender\Sender.cs" />
-    <Compile Include="Game\Resource\RPCProtoCS\BattleTaskConsumer.cs" />
-    <Compile Include="Game\Resource\RPCProtoCS\BattleTaskDispatcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Proto\ProtoCS\ClusterClient.cs" />
-    <Compile Include="Proto\ProtoCS\ClusterServer.cs" />
-    <Compile Include="Proto\ProtoCS\Common.cs" />
-    <Compile Include="Proto\ProtoCS\Logger.cs" />
-    <Compile Include="Proto\ProtoCS\NetProtocol.cs" />
-    <Compile Include="sproto\gen_example\BenchMark.cs" />
-    <Compile Include="sproto\gen_example\Member.cs" />
-    <Compile Include="sproto\gen_example\TestAll.cs" />
-    <Compile Include="sproto\gen_example\TestDecAndBinary.cs" />
-    <Compile Include="sproto\gen_example\TestMap.cs" />
-    <Compile Include="sproto\gen_example\TestRpc.cs" />
-    <Compile Include="sproto\src\Package.cs" />
-    <Compile Include="sproto\src\ProtocolBase.cs" />
-    <Compile Include="sproto\src\ProtocolFunctionDictionary.cs" />
-    <Compile Include="sproto\src\SprotoPack.cs" />
-    <Compile Include="sproto\src\SprotoRpc.cs" />
-    <Compile Include="sproto\src\SprotoStream.cs" />
-    <Compile Include="sproto\src\SprotoTypeBase.cs" />
-    <Compile Include="sproto\src\SprotoTypeDeserialize.cs" />
-    <Compile Include="sproto\src\SprotoTypeFieldOP.cs" />
-    <Compile Include="sproto\src\SprotoTypeReader.cs" />
-    <Compile Include="sproto\src\SprotoTypeSerialize.cs" />
-    <Compile Include="sproto\src\SprotoTypeSize.cs" />
-    <Compile Include="sproto\testCase\TestCaseBase.cs" />
-    <Compile Include="sproto\testCase\TestCaseMap.cs" />
-    <Compile Include="sproto\testCase\TestCaseRpc.cs" />
-    <Compile Include="sproto\testCase\TestCaseSproto.cs" />
-    <Compile Include="sproto\testCase\TestCaseSprotoPack.cs" />
-    <Compile Include="sproto\testCase\TestCaseSprotoTypeDeserialize.cs" />
-    <Compile Include="sproto\testCase\TestCaseSprotoTypeFieldOP.cs" />
-    <Compile Include="sproto\testCase\TestCaseSprotoTypeSerialize.cs" />
-    <Compile Include="sproto\testCase\TestCaseTestAll.cs" />
-    <Compile Include="Test\Gateway\GatewayCase.cs" />
-    <Compile Include="Test\Gateway\GatewayClientCase.cs" />
-    <Compile Include="Test\TestCases.cs" />
+    <Compile Include="Shared\ProtoManager.cs" />
+    <Compile Include="Shared\ProtoManager_Static.cs" />
+    <Compile Include="Shared\ProtoToCSharp\generate\*.cs" />  <!-- 所有文件 -->
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Game\Resource\RPCProtoSchema\BattleTaskConsumer.sproto" />
-    <Content Include="Game\Resource\RPCProtoSchema\BattleTaskDispatcher.sproto" />
-    <Content Include="Game\Resource\sproto2cs.bat" />
-    <Content Include="Game\Startconf\LocalSvr\Battle\BootConfig.json" />
-    <Content Include="Game\Startconf\LocalSvr\ClusterName.json" />
-    <Content Include="Game\Startconf\LocalSvr\TestSender\BootConfig.json" />
-    <Content Include="Game\WinCmd\BootBattle.bat" />
-    <Content Include="Game\WinCmd\BootTestSender.bat" />
-    <Content Include="Proto\ProtoFile\ClusterClient.sproto" />
-    <Content Include="Proto\ProtoFile\ClusterServer.sproto" />
-    <Content Include="Proto\ProtoFile\Common.sproto" />
-    <Content Include="Proto\ProtoFile\Logger.sproto" />
-    <Content Include="sproto\.gitmodules" />
-    <Content Include="sproto\gen_example\Member.sproto" />
-    <Content Include="sproto\gen_example\TestAll.sproto" />
-    <Content Include="sproto\gen_example\TestDecAndBinary.sproto" />
-    <Content Include="sproto\gen_example\TestMap.sproto" />
-    <Content Include="sproto\gen_example\TestRpc.sproto" />
-    <Content Include="sproto\README.md" />
-    <Content Include="Test\Gateway\Resource\Config\Startup.json" />
-    <Content Include="Test\Gateway\WinCmd\BootClient.bat" />
-    <Content Include="Test\Gateway\WinCmd\BootServer.bat" />
+    <Content Include="Shared\ProtoToCSharp\protoc.exe" />
+    <Content Include="Shared\ProtoToCSharp\ProtoToCSharp.bat" />
+    <Content Include="Shared\ProtoToCSharp\proto\ErrorCodeDefine.proto" />
+    <Content Include="Shared\ProtoToCSharp\proto\Login.proto" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

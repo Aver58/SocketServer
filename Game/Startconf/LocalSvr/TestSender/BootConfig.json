@@ -1,5 +1,0 @@
-{
-    "ClusterConfig" : "../../Game/Startconf/LocalSvr/ClusterName.json",
-    "ClusterName" : "battlecli",
-    "Logger" : "../../Game/Logs/Client/"   
-}

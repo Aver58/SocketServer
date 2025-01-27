@@ -1,0 +1,34 @@
+syntax = "proto3";
+package protocol;
+
+message Handshake{
+	string token= 1;
+}
+
+message PlayerInfo{
+	int32 account= 1;
+	string password= 2;
+	string name= 3;
+}
+
+message ReqLogin{
+	int32 account= 1;
+	string password= 2;
+}
+
+message ReqRegister{
+	PlayerInfo playerInfo= 1;
+}
+
+message RetLogin{
+	int32 code= 1;
+}
+
+message RetRegister{
+	int32 code= 1;
+}
+
+service LoginService{
+	rpc login(ReqLogin) returns (RetLogin);
+	rpc register(ReqRegister) returns (RetRegister);
+}
